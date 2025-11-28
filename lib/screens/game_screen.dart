@@ -48,9 +48,22 @@ class _GameScreenState extends State<GameScreen> {
       return Scaffold(
         backgroundColor: const Color(0xFF121212),
         body: Center(
-          child: ElevatedButton(
-            onPressed: _showGameSetupDialog,
-            child: const Text("Start New Game"),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: _showGameSetupDialog,
+                child: const Text("Start New Game"),
+              ),
+              if (vm.statusMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Text(
+                    vm.statusMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+            ],
           ),
         ),
       );

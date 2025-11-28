@@ -24,21 +24,31 @@ class GameViewModel extends ChangeNotifier {
   String? get username => _username;
 
   void startGame(int playerCount, [String? username]) {
-    _username = username;
-    
-    // Create players
-    List<Player> players = [
-      HumanPlayer(id: "p1", name: username ?? "You"),
-    ];
+    print("startGame called with $playerCount players");
+    try {
+      _username = username;
+      
+      // Create players
+      List<Player> players = [
+        HumanPlayer(id: "p1", name: username ?? "You"),
+      ];
 
-    List<String> botNames = ["Merlin", "Gandalf", "Dumbledore", "Morgana", "Saruman"];
-    
-    for (int i = 0; i < playerCount - 1; i++) {
-      players.add(BotPlayer(id: "b${i+1}", name: botNames[i % botNames.length]));
+      List<String> botNames = ["Merlin", "Gandalf", "Dumbledore", "Morgana", "Saruman"];
+      
+      for (int i = 0; i < playerCount - 1; i++) {
+        players.add(BotPlayer(id: "b${i+1}", name: botNames[i % botNames.length]));
+      }
+      
+      print("Initializing game service...");
+      _gameService.initGame(players);
+      print("Game initialized. Starting round...");
+      _startRound();
+    } catch (e, stack) {
+      print("Error in startGame: $e");
+      print(stack);
+      _statusMessage = "Error starting game: $e";
+      notifyListeners();
     }
-    
-    _gameService.initGame(players);
-    _startRound();
   }
 
   void restartGame(int playerCount, [String? username]) {
@@ -46,26 +56,35 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void _startRound() {
-    _phase = GamePhase.SETUP;
-    _gameService.startRound();
-    notifyListeners();
+    print("_startRound called");
+    try {
+      _phase = GamePhase.SETUP;
+      _gameService.startRound();
+      print("Round started in service. Notifying listeners...");
+      notifyListeners();
 
-    // Check if Dealer needs to choose Trump (Wizard turned up)
-    if (_gameService.gameState.trumpCard?.type == CardType.ARCANUM) {
-      Player dealer = _gameService.gameState.players[_gameService.gameState.dealerIndex];
-      if (dealer is BotPlayer) {
-        // Bot chooses trump (random for now, or based on hand)
-        _gameService.gameState.trumpColor = CardColor.values[DateTime.now().millisecond % 4]; // Random valid color
-        _statusMessage = "${dealer.name} chose ${_gameService.gameState.trumpColor?.name} as Trump";
-        _advanceToBidding();
+      // Check if Dealer needs to choose Trump (Wizard turned up)
+      if (_gameService.gameState.trumpCard?.type == CardType.ARCANUM) {
+        Player dealer = _gameService.gameState.players[_gameService.gameState.dealerIndex];
+        if (dealer is BotPlayer) {
+          // Bot chooses trump (random for now, or based on hand)
+          _gameService.gameState.trumpColor = CardColor.values[DateTime.now().millisecond % 4]; // Random valid color
+          _statusMessage = "${dealer.name} chose ${_gameService.gameState.trumpColor?.name} as Trump";
+          _advanceToBidding();
+        } else {
+          // Human dealer - UI should show dialog
+          _statusMessage = "Choose a Trump Color!";
+          notifyListeners();
+          // Wait for user input via setTrumpColor
+        }
       } else {
-        // Human dealer - UI should show dialog
-        _statusMessage = "Choose a Trump Color!";
-        notifyListeners();
-        // Wait for user input via setTrumpColor
+        _advanceToBidding();
       }
-    } else {
-      _advanceToBidding();
+    } catch (e, stack) {
+      print("Error in _startRound: $e");
+      print(stack);
+      _statusMessage = "Error starting round: $e";
+      notifyListeners();
     }
   }
 
