@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:html' as html;
 
 class HighScoreEntry {
   final String username;
@@ -26,11 +27,27 @@ class HighScoreEntry {
 }
 
 class HighScoreService {
-  static const String _key = 'high_scores';
+  // Environment-based storage key to isolate dev/staging/production scores
+  static String get _storageKey {
+    final hostname = html.window.location.hostname;
+    
+    // Development environment (localhost)
+    if (hostname.contains('localhost') || hostname.contains('127.0.0.1')) {
+      return 'arcana_high_scores_dev';
+    }
+    // Staging environment (if you have one)
+    else if (hostname.contains('staging')) {
+      return 'arcana_high_scores_staging';
+    }
+    // Production environment
+    else {
+      return 'arcana_high_scores_prod';
+    }
+  }
   
   Future<List<HighScoreEntry>> getHighScores() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? data = prefs.getString(_key);
+    final String? data = prefs.getString(_storageKey);
     if (data == null) return [];
     
     try {
@@ -74,6 +91,6 @@ class HighScoreService {
     final topScores = scores.take(100).toList();
     
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, jsonEncode(topScores.map((e) => e.toJson()).toList()));
+    await prefs.setString(_storageKey, jsonEncode(topScores.map((e) => e.toJson()).toList()));
   }
 }
