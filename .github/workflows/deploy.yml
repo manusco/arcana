@@ -22,15 +22,14 @@ jobs:
     - name: 🏗️ Build Project
       run: flutter build web --release --base-href "/arcana/" --web-renderer canvaskit
 
-    - name: � Install LFTP
-      run: sudo apt-get install -y lftp
-
-    - name: 📂 Sync files via LFTP
-      run: |
-        # 1. Create a hidden credentials file safely
-        # This prevents special characters in your password from breaking the script
-        echo "machine ${{ secrets.FTP_SERVER }} login ${{ secrets.FTP_USERNAME }} password ${{ secrets.FTP_PASSWORD }}" > ~/.netrc
-        chmod 600 ~/.netrc
-
-        # 2. Run LFTP (It will read the password from the file automatically)
-        lftp -e "set ftp:ssl-auth TLS; set ftp:ssl-force true; set ssl:verify-certificate no; mirror -R --verbose --parallel=2 ./build/web /arcana; quit" ${{ secrets.FTP_SERVER }}
+    - name: 📂 Sync files (The Safe Way)
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./build/web/
+        server-dir: /arcana/
+        exclude: |
+          **/.git*
+          **/.git*/**
