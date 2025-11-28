@@ -1,4 +1,4 @@
-name: Build and Deploy React to All-Inkl
+name: Build and Deploy Arcana to All-Inkl
 
 on:
   push:
@@ -11,20 +11,21 @@ jobs:
     - name: 🚚 Get latest code
       uses: actions/checkout@v4
 
-    - name: ⚡ Setup Node.js
-      uses: actions/setup-node@v4
+    - name: ⚡ Setup Flutter
+      uses: subosito/flutter-action@v2
       with:
-        node-version: '20'
+        flutter-version: '3.24.0'
+        channel: 'stable'
 
     - name: 📦 Install Dependencies
-      run: npm install
+      run: flutter pub get
 
-    - name: 🏗️ Build Project
-      run: npm run build
+    - name: 🏗️ Build Flutter Web
+      run: flutter build web --release
 
     - name: 🔧 Install LFTP
       run: sudo apt-get install -y lftp
 
-    - name: 📂 Sync files via LFTP
+    - name: 📂 Sync files to /arcana/ via LFTP
       run: |
-        lftp -e "set ftp:ssl-auth TLS; set ftp:ssl-force true; set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}; mirror -R --verbose --parallel=2 ./dist /; quit"
+        lftp -e "set ftp:ssl-auth TLS; set ftp:ssl-force true; set ssl:verify-certificate no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}; mirror -R --verbose --parallel=2 --delete ./build/web /arcana; quit"
