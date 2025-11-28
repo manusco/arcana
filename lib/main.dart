@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+// import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'viewmodels/game_viewmodel.dart';
 import 'screens/game_screen.dart';
 
 void main() {
-  setHashUrlStrategy(); // Enable hash routing for static hosting
+  // setHashUrlStrategy(); // Removed to fix compilation error
   runApp(const MyApp());
 }
 

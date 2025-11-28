@@ -32,11 +32,11 @@ class HighScoreService {
     final hostname = html.window.location.hostname;
     
     // Development environment (localhost)
-    if (hostname.contains('localhost') || hostname.contains('127.0.0.1')) {
+    if ((hostname?.contains('localhost') ?? false) || (hostname?.contains('127.0.0.1') ?? false)) {
       return 'arcana_high_scores_dev';
     }
     // Staging environment (if you have one)
-    else if (hostname.contains('staging')) {
+    else if (hostname?.contains('staging') ?? false) {
       return 'arcana_high_scores_staging';
     }
     // Production environment

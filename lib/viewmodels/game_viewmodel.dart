@@ -70,7 +70,7 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void setTrumpColor(CardColor color) {
-    if (_gameService.gameState.trumpCard?.type == CardType.WIZARD) {
+    if (_gameService.gameState.trumpCard?.type == CardType.ARCANUM) {
       _gameService.gameState.trumpColor = color;
       _advanceToBidding();
     }
