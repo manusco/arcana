@@ -20,7 +20,7 @@ jobs:
       run: flutter pub get
 
     - name: 🏗️ Build Project
-      run: flutter build web --release --base-href "/arcana/" --web-renderer canvaskit
+      run: flutter build web --release --base-href /arcana/ --web-renderer canvaskit
 
     - name: 📂 Sync files (The Safe Way)
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
