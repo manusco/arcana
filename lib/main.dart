@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'viewmodels/game_viewmodel.dart';
 import 'screens/game_screen.dart';
 
 void main() {
+  setHashUrlStrategy(); // Enable hash routing for static hosting
   runApp(const MyApp());
 }
 
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => GameViewModel()),
       ],
       child: MaterialApp(
-        title: 'MagicCards',
+        title: 'Arcana',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,
