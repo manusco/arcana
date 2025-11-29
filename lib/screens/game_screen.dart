@@ -17,6 +17,8 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  Offset _biddingOverlayPos = const Offset(50, 150); // Default position
+
   @override
   void initState() {
     super.initState();
@@ -192,58 +194,52 @@ class _GameScreenState extends State<GameScreen> {
               ),
 
 
-            // --- Center Area (Trick & Trump) ---
+            // --- Bottom Area (My Player & Hand) ---
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // My Info
+                  PlayerWidget(
+                    player: state.players[0],
+                    isCurrentPlayer: state.currentPlayerIndex == 0,
+                    isDealer: state.dealerIndex == 0,
+                    isStartingPlayer: vm.phase == GamePhase.PLAYING && state.currentTrick.isEmpty && state.currentPlayerIndex == 0,
+                  ),
+                  const SizedBox(height: 8),
+                  // My Hand
+                  SizedBox(
+                    height: 130,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: state.players[0].hand.length,
+                      itemBuilder: (context, index) {
+                        final card = state.players[0].hand[index];
+                        return CardWidget(
+                          card: card,
+                          onTap: () {
+                             if (vm.phase == GamePhase.PLAYING && state.currentPlayerIndex == 0) {
+                               vm.playCard(card);
+                             }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+
+            // --- Center Area (Trick & Trump) --- (Moved after bottom to render on top)
             Center(
               child: SizedBox(
                 width: 300,
                 height: 300,
                 child: Stack(
                   children: [
-                    // Trump Card (Top Right of center)
-                    if (state.trumpCard != null)
-                      Positioned(
-                        top: -15,
-                        right: 25,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text("TRUMP", style: GoogleFonts.cinzel(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 4),
-                                CardWidget(
-                                  card: state.trumpCard!,
-                                  width: 55,
-                                  height: 82,
-                                ),
-                              ],
-                            ),
-                            if (vm.phase == GamePhase.BIDDING || vm.phase == GamePhase.PLAYING)
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8, top: 30),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.7),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: _getColor(state.trumpColor), width: 2),
-                                  ),
-                                  child: Text(
-                                    state.trumpColor?.name ?? "NONE",
-                                    style: GoogleFonts.robotoMono(
-                                      color: _getColor(state.trumpColor),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
                     // Current Trick
                     ...state.currentTrick.asMap().entries.map((entry) {
                       int idx = entry.key;
@@ -300,123 +296,134 @@ class _GameScreenState extends State<GameScreen> {
               ).animate().fadeIn(),
             ),
 
-            // --- Bottom Area (My Player & Hand) ---
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // My Info
-                  PlayerWidget(
-                    player: state.players[0],
-                    isCurrentPlayer: state.currentPlayerIndex == 0,
-                    isDealer: state.dealerIndex == 0,
-                    isStartingPlayer: vm.phase == GamePhase.PLAYING && state.currentTrick.isEmpty && state.currentPlayerIndex == 0,
-                  ),
-                  const SizedBox(height: 8),
-                  // My Hand
-                  SizedBox(
-                    height: 130,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: state.players[0].hand.length,
-                      itemBuilder: (context, index) {
-                        final card = state.players[0].hand[index];
-                        return CardWidget(
-                          card: card,
-                          onTap: () {
-                             if (vm.phase == GamePhase.PLAYING && state.currentPlayerIndex == 0) {
-                               vm.playCard(card);
-                             }
-                          },
-                        );
-                      },
+            // --- Trump Card (Moved to Top Left) ---
+            if (state.trumpCard != null)
+              Positioned(
+                top: 10,
+                left: 10,
+                child: IntrinsicHeight(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.6),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("TRUMP", style: GoogleFonts.cinzel(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 4),
+                        CardWidget(
+                          card: state.trumpCard!,
+                          width: 40,
+                          height: 60,
+                        ),
+                        if (vm.phase == GamePhase.BIDDING || vm.phase == GamePhase.PLAYING)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              state.trumpColor?.name ?? "NONE",
+                              style: GoogleFonts.robotoMono(
+                                color: _getColor(state.trumpColor),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
               ),
-            ),
 
-            // --- Bidding Overlay (Centered to avoid overlapping players) ---
+            // --- Bidding Overlay (Draggable & Smaller) ---
             if (vm.phase == GamePhase.BIDDING && state.currentPlayerIndex == 0)
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5), width: 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "How many tricks?",
-                        style: GoogleFonts.playfairDisplay(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
+              Positioned(
+                left: _biddingOverlayPos.dx,
+                top: _biddingOverlayPos.dy,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _biddingOverlayPos += details.delta;
+                    });
+                  },
+                  child: Container(
+                    width: 300, // Constrain width
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5), width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 2,
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: List.generate(state.round + 1, (index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: const RadialGradient(
-                                colors: [
-                                  Color(0xFFFFD700),
-                                  Color(0xFFDAA520),
-                                  Color(0xFFB8860B),
-                                ],
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFFFD700).withOpacity(0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 1,
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Your Bid",
+                          style: GoogleFonts.playfairDisplay(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: List.generate(state.round + 1, (index) {
+                            // Calculate if this is the last bidder (dealer)
+                            int dealerIndex = state.dealerIndex;
+                            int currentIndex = state.currentPlayerIndex;
+                            int starterIndex = (dealerIndex + 1) % state.players.length;
+                            bool isLastBidder = ((currentIndex + 1) % state.players.length) == starterIndex;
+                            
+                            // Calculate total bids so far
+                            int totalBids = 0;
+                            for (var player in state.players) {
+                              if (player.predictedTricks > 0 || player.id != state.currentPlayer.id) {
+                                totalBids += player.predictedTricks;
+                              }
+                            }
+                            
+                            // Check if this bid would make total equal to round (forbidden for last bidder)
+                            bool isForbidden = isLastBidder && (totalBids + index) == state.round;
+                            
+                            return SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isForbidden 
+                                      ? Colors.grey.withOpacity(0.3)
+                                      : const Color(0xFFFFD700),
+                                  foregroundColor: isForbidden ? Colors.grey : Colors.black,
+                                  padding: EdgeInsets.zero,
+                                  shape: const CircleBorder(),
+                                  elevation: isForbidden ? 0 : 4,
                                 ),
-                                const BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                foregroundColor: Colors.black,
-                                shadowColor: Colors.transparent,
-                                shape: const CircleBorder(),
-                                padding: const EdgeInsets.all(22),
-                              ),
-                              onPressed: () => vm.submitBid(index),
-                              child: Text(
-                                "$index",
-                                style: GoogleFonts.robotoMono(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                                onPressed: isForbidden ? null : () => vm.submitBid(index),
+                                child: Text(
+                                  "$index",
+                                  style: GoogleFonts.robotoMono(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ).animate().fadeIn().scale(begin: const Offset(0.8, 0.8)),

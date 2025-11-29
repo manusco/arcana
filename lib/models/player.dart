@@ -38,7 +38,15 @@ class HumanPlayer extends Player {
 }
 
 class BotPlayer extends Player {
-  BotPlayer({required String id, required String name}) : super(id: id, name: name);
+  final double riskFactor; // -0.5 (cautious) to +0.5 (risky)
+  final int skillLevel;    // 1 (basic) to 3 (expert)
+
+  BotPlayer({
+    required String id, 
+    required String name,
+    this.riskFactor = 0.0,
+    this.skillLevel = 2,
+  }) : super(id: id, name: name);
 
   @override
   Future<int> makePrediction(GameState gameState) async {

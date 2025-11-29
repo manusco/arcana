@@ -20,6 +20,7 @@ class PlayerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
+      clipBehavior: Clip.none, // Allow badges to overflow
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.3),
         borderRadius: BorderRadius.circular(16),
@@ -40,6 +41,7 @@ class PlayerWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
+            clipBehavior: Clip.none, // Allow badges to overflow
             children: [
               // Metallic ring
               Container(
@@ -71,28 +73,36 @@ class PlayerWidget extends StatelessWidget {
               ),
               if (isDealer)
                 Positioned(
-                  right: 0,
-                  bottom: 0,
+                  right: -4,
+                  bottom: -4,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.orange,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(1, 1)),
+                      ],
                     ),
-                    child: const Text("D", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: const Text("D", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
                   ),
                 ),
               if (isStartingPlayer)
                 Positioned(
-                  left: 0,
-                  top: 0,
+                  left: -4,
+                  top: -4,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.greenAccent,
                       shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(1, 1)),
+                      ],
                     ),
-                    child: const Icon(Icons.play_arrow, size: 14, color: Colors.white),
+                    child: const Icon(Icons.play_arrow, size: 16, color: Colors.black),
                   ),
                 ),
             ],

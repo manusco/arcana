@@ -53,6 +53,14 @@ class CardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Scale factor based on width (default 80)
+    final scale = width / 80;
+    final fontSize = 16 * scale;
+    final suitSize = 14 * scale;
+    final centerIconSize = 40 * scale;
+    final centerTextSize = 10 * scale;
+    final centerSuitSize = 28 * scale;
+    
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -62,74 +70,48 @@ class CardWidget extends StatelessWidget {
         margin: EdgeInsets.only(bottom: isSelected ? 20 : 0, left: 4, right: 4),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12 * scale),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(2, 4),
+              blurRadius: 8 * scale,
+              offset: Offset(2 * scale, 4 * scale),
             ),
             if (isSelected)
               BoxShadow(
                 color: _cardColor.withOpacity(0.6),
-                blurRadius: 12,
-                spreadRadius: 2,
+                blurRadius: 12 * scale,
+                spreadRadius: 2 * scale,
               ),
           ],
-          border: Border.all(color: _cardColor, width: 2),
+          border: Border.all(color: _cardColor, width: 2 * scale),
         ),
-        child: Stack(
-          children: [
-            // Top Left Corner
-            Positioned(
-              top: 6,
-              left: 8,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    _cardSymbol,
-                    style: GoogleFonts.robotoMono(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _cardColor,
-                    ),
-                  ),
-                  if (_suitSymbol.isNotEmpty)
-                    Text(
-                      _suitSymbol,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: _cardColor,
-                        height: 0.9,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            
-            // Bottom Right Corner (Inverted)
-            Positioned(
-              bottom: 6,
-              right: 8,
-              child: Transform.rotate(
-                angle: 3.14159,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10 * scale),
+          child: Stack(
+            children: [
+              // Top Left Corner
+              Positioned(
+                top: 4 * scale,
+                left: 6 * scale,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _cardSymbol,
                       style: GoogleFonts.robotoMono(
-                        fontSize: 16,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                         color: _cardColor,
+                        height: 1.0,
                       ),
                     ),
                     if (_suitSymbol.isNotEmpty)
                       Text(
                         _suitSymbol,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: suitSize,
                           color: _cardColor,
                           height: 0.9,
                         ),
@@ -137,81 +119,116 @@ class CardWidget extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-            
-            // Center Design
-            Center(
-              child: card.type == CardType.ARCANUM
-                  ? Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.auto_fix_high, size: 40, color: _cardColor),
-                        const SizedBox(height: 4),
+              
+              // Bottom Right Corner (Inverted)
+              Positioned(
+                bottom: 4 * scale,
+                right: 6 * scale,
+                child: Transform.rotate(
+                  angle: 3.14159,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _cardSymbol,
+                        style: GoogleFonts.robotoMono(
+                          fontSize: fontSize,
+                          fontWeight: FontWeight.bold,
+                          color: _cardColor,
+                          height: 1.0,
+                        ),
+                      ),
+                      if (_suitSymbol.isNotEmpty)
                         Text(
-                          "ARCANUM",
-                          style: GoogleFonts.cinzel(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                          _suitSymbol,
+                          style: TextStyle(
+                            fontSize: suitSize,
                             color: _cardColor,
-                            letterSpacing: 1.2,
+                            height: 0.9,
                           ),
                         ),
-                      ],
-                    )
-                  : card.type == CardType.SHADOW
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.theater_comedy, size: 40, color: _cardColor),
-                            const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+              ),
+              
+              // Center Design
+              Center(
+                child: card.type == CardType.ARCANUM
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.auto_fix_high, size: centerIconSize, color: _cardColor),
+                          SizedBox(height: 2 * scale),
+                          if (scale >= 0.7) // Only show text if card is large enough
                             Text(
-                              "SHADOW",
+                              "ARCANUM",
                               style: GoogleFonts.cinzel(
-                                fontSize: 10,
+                                fontSize: centerTextSize,
                                 fontWeight: FontWeight.bold,
                                 color: _cardColor,
-                                letterSpacing: 1.2,
+                                letterSpacing: 1.2 * scale,
                               ),
                             ),
-                          ],
-                        )
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // Large center suit symbols
-                            if (_suitSymbol.isNotEmpty)
-                              Text(
-                                _suitSymbol * 3,
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  color: _cardColor.withOpacity(0.3),
-                                  letterSpacing: 2,
+                        ],
+                      )
+                    : card.type == CardType.SHADOW
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.theater_comedy, size: centerIconSize, color: _cardColor),
+                              SizedBox(height: 2 * scale),
+                              if (scale >= 0.7) // Only show text if card is large enough
+                                Text(
+                                  "SHADOW",
+                                  style: GoogleFonts.cinzel(
+                                    fontSize: centerTextSize,
+                                    fontWeight: FontWeight.bold,
+                                    color: _cardColor,
+                                    letterSpacing: 1.2 * scale,
+                                  ),
                                 ),
-                              ),
-                          ],
-                        ),
-            ),
-            
-            // Subtle gradient overlay for depth
-            Positioned.fill(
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white.withOpacity(0.1),
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.05),
-                      ],
+                            ],
+                          )
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Large center suit symbols
+                              if (_suitSymbol.isNotEmpty && scale >= 0.6)
+                                Text(
+                                  _suitSymbol * (scale >= 0.8 ? 3 : 2),
+                                  style: TextStyle(
+                                    fontSize: centerSuitSize,
+                                    color: _cardColor.withOpacity(0.3),
+                                    letterSpacing: 2 * scale,
+                                  ),
+                                ),
+                            ],
+                          ),
+              ),
+              
+              // Subtle gradient overlay for depth
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10 * scale),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withOpacity(0.1),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.05),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.2, end: 0),
     );

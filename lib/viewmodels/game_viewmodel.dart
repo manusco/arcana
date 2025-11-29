@@ -33,10 +33,24 @@ class GameViewModel extends ChangeNotifier {
         HumanPlayer(id: "p1", name: username ?? "You"),
       ];
 
-      List<String> botNames = ["Merlin", "Gandalf", "Dumbledore", "Morgana", "Saruman"];
+      // Bot Personalities
+      final botConfigs = [
+        {'name': 'Magnus', 'risk': 0.0, 'skill': 3},  // The Pro
+        {'name': 'Pythia', 'risk': 0.2, 'skill': 3},  // Intuitive
+        {'name': 'Nero', 'risk': 0.5, 'skill': 2},    // Aggressor
+        {'name': 'Aura', 'risk': -0.3, 'skill': 2},   // Cautious
+        {'name': 'Varius', 'risk': 0.0, 'skill': 1},  // Chaotic
+        {'name': 'Sol', 'risk': 0.1, 'skill': 2},     // Optimist
+      ];
       
       for (int i = 0; i < playerCount - 1; i++) {
-        players.add(BotPlayer(id: "b${i+1}", name: botNames[i % botNames.length]));
+        var config = botConfigs[i % botConfigs.length];
+        players.add(BotPlayer(
+          id: "b${i+1}", 
+          name: config['name'] as String,
+          riskFactor: config['risk'] as double,
+          skillLevel: config['skill'] as int,
+        ));
       }
       
       print("Initializing game service...");
@@ -108,6 +122,34 @@ class GameViewModel extends ChangeNotifier {
       if (current is BotPlayer) {
         await Future.delayed(const Duration(milliseconds: 1000)); // UX delay
         int bid = _aiService.calculateBid(current, _gameService.gameState);
+        
+        // Apply dealer rule: last bidder cannot make total equal to round
+        int dealerIndex = _gameService.gameState.dealerIndex;
+        int currentIndex = _gameService.gameState.currentPlayerIndex;
+        int starterIndex = (dealerIndex + 1) % _gameService.gameState.players.length;
+        bool isLastBidder = ((currentIndex + 1) % _gameService.gameState.players.length) == starterIndex;
+        
+        if (isLastBidder) {
+          int totalBids = 0;
+          for (var player in _gameService.gameState.players) {
+            if (player.id != current.id) {
+              totalBids += player.predictedTricks;
+            }
+          }
+          
+          // If calculated bid would make total equal to round, adjust it
+          if (totalBids + bid == _gameService.gameState.round) {
+            // Try bid + 1 first, then bid - 1
+            if (bid < _gameService.gameState.round) {
+              bid = bid + 1;
+            } else if (bid > 0) {
+              bid = bid - 1;
+            } else {
+              bid = 1; // Must bid at least 1 if 0 is forbidden
+            }
+          }
+        }
+        
         current.predictedTricks = bid;
         _statusMessage = "${current.name} bids $bid";
         notifyListeners();

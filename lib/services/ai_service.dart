@@ -20,8 +20,19 @@ class AiService {
       expectedTricks += winProbability;
     }
 
-    // Adjust for risk tolerance?
-    // For now, round to nearest.
+    // Adjust for risk tolerance
+    if (player is BotPlayer) {
+      // Risk factor shifts the "rounding point".
+      // Standard round: 2.5 -> 3.0.
+      // Cautious (-0.5): 2.5 -> 2.0 (needs 3.0 to bid 3).
+      // Risky (+0.5): 2.0 -> 3.0 (needs only 2.0 to bid 3... wait, no).
+      
+      // Better logic: Add risk factor to expected tricks before rounding?
+      // Expected: 2.4. Risk +0.2 -> 2.6 -> Bids 3.
+      // Expected: 2.6. Risk -0.2 -> 2.4 -> Bids 2.
+      return (expectedTricks + player.riskFactor).round();
+    }
+    
     return expectedTricks.round();
   }
 
