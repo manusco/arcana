@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:web/web.dart' as web;
 
 class HighScoreEntry {
   final String username;
@@ -29,14 +29,14 @@ class HighScoreEntry {
 class HighScoreService {
   // Environment-based storage key to isolate dev/staging/production scores
   static String get _storageKey {
-    final hostname = html.window.location.hostname;
+    final hostname = web.window.location.hostname;
     
     // Development environment (localhost)
-    if ((hostname?.contains('localhost') ?? false) || (hostname?.contains('127.0.0.1') ?? false)) {
+    if (hostname.contains('localhost') || hostname.contains('127.0.0.1')) {
       return 'arcana_high_scores_dev';
     }
     // Staging environment (if you have one)
-    else if (hostname?.contains('staging') ?? false) {
+    else if (hostname.contains('staging')) {
       return 'arcana_high_scores_staging';
     }
     // Production environment
