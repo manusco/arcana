@@ -37,6 +37,284 @@ class _GameScreenState extends State<GameScreen> {
           context.read<GameViewModel>().startGame(count, username);
           Navigator.pop(context);
         },
+        onShowRules: _showRulesDialog,
+      ),
+    );
+  }
+
+  void _showRulesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF1a0033),
+                const Color(0xFF0d001a),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.amber.withOpacity(0.3), width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withOpacity(0.2),
+                blurRadius: 20,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.amber.withOpacity(0.2),
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(18),
+                    topRight: Radius.circular(18),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.auto_fix_high, color: Colors.amber, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        "Arcana: The Game of Prophecy",
+                        style: GoogleFonts.cinzel(
+                          color: Colors.amber,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.amber),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              // Scrollable content
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRuleSection(
+                        icon: Icons.stars,
+                        title: "Welcome to Arcana",
+                        content: "In this mystical contest, victory does not go to the one with the strongest hand, but to the one who can see the future.",
+                      ),
+                      const SizedBox(height: 20),
+                      _buildRuleSection(
+                        icon: Icons.flag,
+                        title: "The Goal",
+                        content: "Your objective is not just to win tricks, but to predict exactly how many tricks you will win each round. Accuracy is everything.",
+                      ),
+                      const SizedBox(height: 20),
+                      _buildRuleSection(
+                        icon: Icons.style,
+                        title: "The Cards",
+                        content: "",
+                        children: [
+                          _buildCardInfo("The Suits (1–13)", "Blood (Red), Spirit (Blue), Nature (Green), Light (Yellow)"),
+                          _buildCardInfo("The Arcanum (A)", "The ultimate power. It always wins the trick (unless another Arcanum was played first)."),
+                          _buildCardInfo("The Shadow (S)", "The void. It always loses the trick (unless the trick consists entirely of Shadows)."),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _buildRuleSection(
+                        icon: Icons.play_circle,
+                        title: "How to Play",
+                        content: "",
+                        children: [
+                          _buildStep("1. The Deal", "The game is played over several rounds. Round 1 starts with 1 card each; the final round deals the entire deck."),
+                          _buildStep("2. The Trump", "One card is revealed to determine the Trump suit for the round."),
+                          _buildStep("3. The Prophecy", "Looking at your hand, you must announce how many tricks you plan to take."),
+                          _buildStep("4. The Action", "Players play one card in clockwise order.\n• You must follow suit if you can (unless you play an Arcanum or Shadow).\n• Arcanum beats Trump.\n• Trump beats the lead suit.\n• High Card of the lead suit wins if no Trump/Arcanum is played."),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _buildRuleSection(
+                        icon: Icons.emoji_events,
+                        title: "Scoring",
+                        content: "",
+                        children: [
+                          _buildScoreInfo("✓ Correct Prophecy", "You gain 20 points + 10 points for every trick you won."),
+                          _buildScoreInfo("✗ Failed Prophecy", "You lose 10 points for every trick you were off (above or below your bid)."),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Center(
+                        child: Text(
+                          "Do you have the sight to master the Arcana?",
+                          style: GoogleFonts.cinzel(
+                            color: Colors.amber.withOpacity(0.8),
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRuleSection({
+    required IconData icon,
+    required String title,
+    required String content,
+    List<Widget>? children,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.amber, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: GoogleFonts.cinzel(
+                color: Colors.amber,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+        if (content.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            content,
+            style: GoogleFonts.roboto(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+        ],
+        if (children != null) ...[
+          const SizedBox(height: 8),
+          ...children,
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCardInfo(String name, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("• ", style: TextStyle(color: Colors.amber, fontSize: 16)),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: "$name: ",
+                    style: GoogleFonts.robotoMono(
+                      color: Colors.amber.withOpacity(0.9),
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextSpan(
+                    text: description,
+                    style: GoogleFonts.roboto(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 13,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep(String step, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            step,
+            style: GoogleFonts.robotoMono(
+              color: Colors.amber.withOpacity(0.9),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            style: GoogleFonts.roboto(
+              color: Colors.white.withOpacity(0.85),
+              fontSize: 13,
+              height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScoreInfo(String label, String description) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$label: ",
+            style: GoogleFonts.robotoMono(
+              color: label.startsWith("✓") ? Colors.green : Colors.red,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              description,
+              style: GoogleFonts.roboto(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: 13,
+                height: 1.4,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -49,24 +327,29 @@ class _GameScreenState extends State<GameScreen> {
     if (state.players.isEmpty) {
       return Scaffold(
         backgroundColor: const Color(0xFF121212),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton(
-                onPressed: _showGameSetupDialog,
-                child: const Text("Start New Game"),
-              ),
-              if (vm.statusMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    vm.statusMessage!,
-                    style: const TextStyle(color: Colors.red),
+        body: Stack(
+          children: [
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    onPressed: _showGameSetupDialog,
+                    child: const Text("Start New Game"),
                   ),
-                ),
-            ],
-          ),
+                  if (vm.statusMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                        vm.statusMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            ),
+          ],
         ),
       );
     }
@@ -554,7 +837,12 @@ class _GameScreenState extends State<GameScreen> {
 
 class _GameSetupDialog extends StatefulWidget {
   final Function(int, String?) onStart;
-  const _GameSetupDialog({required this.onStart});
+  final VoidCallback? onShowRules;
+  
+  const _GameSetupDialog({
+    required this.onStart,
+    this.onShowRules,
+  });
 
   @override
   State<_GameSetupDialog> createState() => _GameSetupDialogState();
@@ -568,7 +856,20 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.grey[900],
-      title: Text("New Game", style: GoogleFonts.cinzel(color: Colors.white)),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("New Game", style: GoogleFonts.cinzel(color: Colors.white)),
+          IconButton(
+            icon: const Icon(Icons.help_outline, color: Colors.amber),
+            onPressed: widget.onShowRules != null ? () {
+              print("Help icon clicked. Calling onShowRules.");
+              widget.onShowRules!();
+            } : null,
+            tooltip: "How to Play",
+          ),
+        ],
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

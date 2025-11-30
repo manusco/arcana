@@ -35,12 +35,12 @@ class GameViewModel extends ChangeNotifier {
 
       // Bot Personalities
       final botConfigs = [
-        {'name': 'Magnus', 'risk': 0.0, 'skill': 3},  // The Pro
-        {'name': 'Pythia', 'risk': 0.2, 'skill': 3},  // Intuitive
-        {'name': 'Nero', 'risk': 0.5, 'skill': 2},    // Aggressor
-        {'name': 'Aura', 'risk': -0.3, 'skill': 2},   // Cautious
-        {'name': 'Varius', 'risk': 0.0, 'skill': 1},  // Chaotic
-        {'name': 'Sol', 'risk': 0.1, 'skill': 2},     // Optimist
+        {'name': 'Mio', 'risk': 0.0, 'skill': 3},      // The Pro
+        {'name': 'Nea', 'risk': 0.2, 'skill': 3},      // Intuitive
+        {'name': 'Nero', 'risk': 0.5, 'skill': 2},     // Aggressor
+        {'name': 'Aura', 'risk': -0.3, 'skill': 2},    // Cautious
+        {'name': 'Varius', 'risk': 0.0, 'skill': 1},   // Chaotic
+        {'name': 'Sol', 'risk': 0.1, 'skill': 2},      // Optimist
       ];
       
       for (int i = 0; i < playerCount - 1; i++) {
