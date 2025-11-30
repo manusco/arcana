@@ -8,26 +8,26 @@ import 'package:magic_cards/services/game_service.dart';
 void main() {
   group('Card Logic', () {
     test('Wizard beats everything', () {
-      final wizard = Card(type: CardType.WIZARD, color: CardColor.NONE, id: 'w', imageAssetPath: '');
-      final ace = Card(type: CardType.NUMBER, color: CardColor.RED, value: 13, id: 'a', imageAssetPath: '');
+      final wizard = Card(type: CardType.ARCANUM, color: CardColor.NONE, id: 'w', imageAssetPath: '');
+      final ace = Card(type: CardType.NUMBER, color: CardColor.BLOOD, value: 13, id: 'a', imageAssetPath: '');
       
-      expect(wizard.beats(ace, CardColor.BLUE, CardColor.RED), true);
+      expect(wizard.beats(ace, CardColor.SPIRIT, CardColor.BLOOD), true);
       // First wizard wins against second wizard
-      expect(wizard.beats(wizard, CardColor.BLUE, CardColor.RED), true); 
+      expect(wizard.beats(wizard, CardColor.SPIRIT, CardColor.BLOOD), false); 
     });
 
     test('Trump beats non-trump', () {
-      final trump = Card(type: CardType.NUMBER, color: CardColor.RED, value: 2, id: 't', imageAssetPath: '');
-      final ace = Card(type: CardType.NUMBER, color: CardColor.BLUE, value: 13, id: 'a', imageAssetPath: '');
+      final trump = Card(type: CardType.NUMBER, color: CardColor.BLOOD, value: 2, id: 't', imageAssetPath: '');
+      final ace = Card(type: CardType.NUMBER, color: CardColor.SPIRIT, value: 13, id: 'a', imageAssetPath: '');
       
-      expect(trump.beats(ace, CardColor.RED, CardColor.BLUE), true);
+      expect(trump.beats(ace, CardColor.BLOOD, CardColor.SPIRIT), true);
     });
 
     test('Lead color beats off-suit', () {
-      final lead = Card(type: CardType.NUMBER, color: CardColor.BLUE, value: 2, id: 'l', imageAssetPath: '');
-      final off = Card(type: CardType.NUMBER, color: CardColor.GREEN, value: 13, id: 'o', imageAssetPath: '');
+      final lead = Card(type: CardType.NUMBER, color: CardColor.SPIRIT, value: 2, id: 'l', imageAssetPath: '');
+      final off = Card(type: CardType.NUMBER, color: CardColor.NATURE, value: 13, id: 'o', imageAssetPath: '');
       
-      expect(lead.beats(off, CardColor.RED, CardColor.BLUE), true);
+      expect(lead.beats(off, CardColor.BLOOD, CardColor.SPIRIT), true);
     });
   });
 
@@ -56,10 +56,10 @@ void main() {
       gameService.startRound();
       
       // Force set trick
-      gameService.gameState.trumpColor = CardColor.RED;
+      gameService.gameState.trumpColor = CardColor.BLOOD;
       
-      final c1 = Card(type: CardType.NUMBER, color: CardColor.BLUE, value: 10, id: 'c1', imageAssetPath: '');
-      final c2 = Card(type: CardType.NUMBER, color: CardColor.BLUE, value: 12, id: 'c2', imageAssetPath: '');
+      final c1 = Card(type: CardType.NUMBER, color: CardColor.SPIRIT, value: 10, id: 'c1', imageAssetPath: '');
+      final c2 = Card(type: CardType.NUMBER, color: CardColor.SPIRIT, value: 12, id: 'c2', imageAssetPath: '');
       
       gameService.gameState.currentTrick.add(PlayedCard(card: c1, playerId: '1'));
       gameService.gameState.currentTrick.add(PlayedCard(card: c2, playerId: '2'));

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../models/player.dart';
+import '../services/localization_service.dart';
 
 class PlayerWidget extends StatelessWidget {
   final Player player;
@@ -133,7 +135,7 @@ class PlayerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            "Score: ${player.score}",
+            "${context.watch<LocalizationService>().translate('score')}: ${player.score}",
             style: const TextStyle(color: Colors.white70, fontSize: 10),
           ),
         ],

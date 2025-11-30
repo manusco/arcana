@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'viewmodels/game_viewmodel.dart';
+import 'services/localization_service.dart';
 import 'screens/game_screen.dart';
 
 void main() {
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => GameViewModel()),
+        ChangeNotifierProvider(create: (_) => LocalizationService()),
       ],
       child: MaterialApp(
         title: 'Arcana',

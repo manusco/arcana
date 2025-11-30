@@ -8,6 +8,7 @@ import '../widgets/player_widget.dart';
 import '../widgets/card_widget.dart';
 import '../services/high_score_service.dart';
 import '../widgets/high_score_widget.dart';
+import '../services/localization_service.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -38,6 +39,7 @@ class _GameScreenState extends State<GameScreen> {
           Navigator.pop(context);
         },
         onShowRules: _showRulesDialog,
+        onShowHighScores: _showHighScoresDialog,
       ),
     );
   }
@@ -84,28 +86,6 @@ class _GameScreenState extends State<GameScreen> {
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(18),
                     topRight: Radius.circular(18),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.auto_fix_high, color: Colors.amber, size: 28),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        "Arcana: The Game of Prophecy",
-                        style: GoogleFonts.cinzel(
-                          color: Colors.amber,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close, color: Colors.amber),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
                 ),
               ),
               // Scrollable content
@@ -117,52 +97,52 @@ class _GameScreenState extends State<GameScreen> {
                     children: [
                       _buildRuleSection(
                         icon: Icons.stars,
-                        title: "Welcome to Arcana",
-                        content: "In this mystical contest, victory does not go to the one with the strongest hand, but to the one who can see the future.",
+                        title: context.watch<LocalizationService>().translate('welcome_title'),
+                        content: context.watch<LocalizationService>().translate('welcome_text'),
                       ),
                       const SizedBox(height: 20),
                       _buildRuleSection(
                         icon: Icons.flag,
-                        title: "The Goal",
-                        content: "Your objective is not just to win tricks, but to predict exactly how many tricks you will win each round. Accuracy is everything.",
+                        title: context.watch<LocalizationService>().translate('goal_title'),
+                        content: context.watch<LocalizationService>().translate('goal_text'),
                       ),
                       const SizedBox(height: 20),
                       _buildRuleSection(
                         icon: Icons.style,
-                        title: "The Cards",
+                        title: context.watch<LocalizationService>().translate('cards_title'),
                         content: "",
                         children: [
-                          _buildCardInfo("The Suits (1–13)", "Blood (Red), Spirit (Blue), Nature (Green), Light (Yellow)"),
-                          _buildCardInfo("The Arcanum (A)", "The ultimate power. It always wins the trick (unless another Arcanum was played first)."),
-                          _buildCardInfo("The Shadow (S)", "The void. It always loses the trick (unless the trick consists entirely of Shadows)."),
+                          _buildCardInfo(context.watch<LocalizationService>().translate('suits_title'), context.watch<LocalizationService>().translate('suits_text')),
+                          _buildCardInfo(context.watch<LocalizationService>().translate('arcanum_title'), context.watch<LocalizationService>().translate('arcanum_text')),
+                          _buildCardInfo(context.watch<LocalizationService>().translate('shadow_title'), context.watch<LocalizationService>().translate('shadow_text')),
                         ],
                       ),
                       const SizedBox(height: 20),
                       _buildRuleSection(
                         icon: Icons.play_circle,
-                        title: "How to Play",
+                        title: context.watch<LocalizationService>().translate('how_to_play_title'),
                         content: "",
                         children: [
-                          _buildStep("1. The Deal", "The game is played over several rounds. Round 1 starts with 1 card each; the final round deals the entire deck."),
-                          _buildStep("2. The Trump", "One card is revealed to determine the Trump suit for the round."),
-                          _buildStep("3. The Prophecy", "Looking at your hand, you must announce how many tricks you plan to take."),
-                          _buildStep("4. The Action", "Players play one card in clockwise order.\n• You must follow suit if you can (unless you play an Arcanum or Shadow).\n• Arcanum beats Trump.\n• Trump beats the lead suit.\n• High Card of the lead suit wins if no Trump/Arcanum is played."),
+                          _buildStep(context.watch<LocalizationService>().translate('step_deal_title'), context.watch<LocalizationService>().translate('step_deal_text')),
+                          _buildStep(context.watch<LocalizationService>().translate('step_trump_title'), context.watch<LocalizationService>().translate('step_trump_text')),
+                          _buildStep(context.watch<LocalizationService>().translate('step_prophecy_title'), context.watch<LocalizationService>().translate('step_prophecy_text')),
+                          _buildStep(context.watch<LocalizationService>().translate('step_action_title'), context.watch<LocalizationService>().translate('step_action_text')),
                         ],
                       ),
                       const SizedBox(height: 20),
                       _buildRuleSection(
                         icon: Icons.emoji_events,
-                        title: "Scoring",
+                        title: context.watch<LocalizationService>().translate('scoring_title'),
                         content: "",
                         children: [
-                          _buildScoreInfo("✓ Correct Prophecy", "You gain 20 points + 10 points for every trick you won."),
-                          _buildScoreInfo("✗ Failed Prophecy", "You lose 10 points for every trick you were off (above or below your bid)."),
+                          _buildScoreInfo(context.watch<LocalizationService>().translate('score_correct_title'), context.watch<LocalizationService>().translate('score_correct_text')),
+                          _buildScoreInfo(context.watch<LocalizationService>().translate('score_failed_title'), context.watch<LocalizationService>().translate('score_failed_text')),
                         ],
                       ),
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          "Do you have the sight to master the Arcana?",
+                          context.watch<LocalizationService>().translate('footer_text'),
                           style: GoogleFonts.cinzel(
                             color: Colors.amber.withOpacity(0.8),
                             fontSize: 16,
@@ -179,6 +159,20 @@ class _GameScreenState extends State<GameScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showHighScoresDialog() async {
+    final service = HighScoreService();
+    final scores = await service.getHighScores();
+    if (!mounted) return;
+    
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: HighScoreWidget(scores: scores),
       ),
     );
   }
@@ -322,6 +316,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<GameViewModel>();
+    final loc = context.watch<LocalizationService>();
     final state = vm.gameState;
 
     if (state.players.isEmpty) {
@@ -335,7 +330,7 @@ class _GameScreenState extends State<GameScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: _showGameSetupDialog,
-                    child: const Text("Start New Game"),
+                    child: Text(loc.translate('start_new_game')),
                   ),
                   if (vm.statusMessage != null)
                     Padding(
@@ -650,7 +645,7 @@ class _GameScreenState extends State<GameScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Your Bid",
+                          loc.translate('your_bid'),
                           style: GoogleFonts.playfairDisplay(
                             color: Colors.white,
                             fontSize: 20,
@@ -719,7 +714,7 @@ class _GameScreenState extends State<GameScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text("Choose Trump Color", style: GoogleFonts.cinzel(color: Colors.white, fontSize: 24)),
+                      Text(loc.translate('choose_trump'), style: GoogleFonts.cinzel(color: Colors.white, fontSize: 24)),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -745,7 +740,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 32),
                     onPressed: _showGameSetupDialog,
-                    tooltip: "Restart Game",
+                    tooltip: loc.translate('restart_tooltip'),
                   ),
                   const SizedBox(width: 10),
                   IconButton(
@@ -768,7 +763,7 @@ class _GameScreenState extends State<GameScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: Text("Scoreboard", style: GoogleFonts.cinzel(color: Colors.white)),
+        title: Text(context.read<LocalizationService>().translate('scoreboard_title'), style: GoogleFonts.cinzel(color: Colors.white)),
         content: SingleChildScrollView(
           child: Table(
             border: TableBorder.all(color: Colors.white24),
@@ -777,7 +772,7 @@ class _GameScreenState extends State<GameScreen> {
               // Header
               TableRow(
                 children: [
-                  const Padding(padding: EdgeInsets.all(8.0), child: Text("Rnd", style: TextStyle(color: Colors.amber))),
+                  Padding(padding: const EdgeInsets.all(8.0), child: Text(context.read<LocalizationService>().translate('round_abbr'), style: const TextStyle(color: Colors.amber))),
                   ...players.map((p) => Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(p.name, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
@@ -838,10 +833,12 @@ class _GameScreenState extends State<GameScreen> {
 class _GameSetupDialog extends StatefulWidget {
   final Function(int, String?) onStart;
   final VoidCallback? onShowRules;
+  final VoidCallback? onShowHighScores;
   
   const _GameSetupDialog({
     required this.onStart,
     this.onShowRules,
+    this.onShowHighScores,
   });
 
   @override
@@ -859,25 +856,41 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("New Game", style: GoogleFonts.cinzel(color: Colors.white)),
+          Text(context.watch<LocalizationService>().translate('start_new_game'), style: GoogleFonts.cinzel(color: Colors.white)),
           IconButton(
             icon: const Icon(Icons.help_outline, color: Colors.amber),
             onPressed: widget.onShowRules != null ? () {
               print("Help icon clicked. Calling onShowRules.");
               widget.onShowRules!();
             } : null,
-            tooltip: "How to Play",
+            tooltip: context.watch<LocalizationService>().translate('how_to_play_title'),
           ),
         ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Language Toggle
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _languageBtn(context, 'en', '🇺🇸'),
+              const SizedBox(width: 20),
+              _languageBtn(context, 'de', '🇩🇪'),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            icon: const Icon(Icons.emoji_events, color: Colors.amber),
+            label: Text(context.watch<LocalizationService>().translate('high_scores'), style: const TextStyle(color: Colors.amber)),
+            onPressed: widget.onShowHighScores,
+          ),
+          const SizedBox(height: 10),
           TextField(
             decoration: InputDecoration(
-              labelText: 'Your Name (optional)',
+              labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: 'Enter name for high score',
+              hintText: '',
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -890,7 +903,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
-          const Text("Select Number of Players:", style: TextStyle(color: Colors.white70)),
+          Text("${context.watch<LocalizationService>().translate('number_of_players')}:", style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -919,7 +932,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
           onPressed: () => widget.onStart(_playerCount, _username.isEmpty ? null : _username),
-          child: const Text("Start"),
+          child: Text(context.watch<LocalizationService>().translate('start_game')),
         ),
       ],
     );
@@ -936,5 +949,22 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
     if (position == 2) return "2ND PLACE";
     if (position == 3) return "3RD PLACE";
     return "${position}TH PLACE";
+  }
+
+  Widget _languageBtn(BuildContext context, String code, String flag) {
+    final loc = context.watch<LocalizationService>();
+    final isSelected = loc.currentLocale.languageCode == code;
+    return GestureDetector(
+      onTap: () => loc.changeLocale(code),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: isSelected ? Border.all(color: Colors.amber) : null,
+        ),
+        child: Text(flag, style: const TextStyle(fontSize: 24)),
+      ),
+    );
   }
 }
