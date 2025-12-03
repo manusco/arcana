@@ -899,11 +899,11 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             ],
           ),
           const SizedBox(height: 10),
-          TextButton.icon(
-            icon: const Icon(Icons.emoji_events, color: Colors.amber),
-            label: Text(context.watch<LocalizationService>().translate('high_scores'), style: const TextStyle(color: Colors.amber)),
-            onPressed: widget.onShowHighScores,
-          ),
+          // TextButton.icon(
+          //   icon: const Icon(Icons.emoji_events, color: Colors.amber),
+          //   label: Text(context.watch<LocalizationService>().translate('high_scores'), style: const TextStyle(color: Colors.amber)),
+          //   onPressed: widget.onShowHighScores,
+          // ),
           const SizedBox(height: 10),
           TextField(
             decoration: InputDecoration(

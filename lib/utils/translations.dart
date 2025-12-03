@@ -41,9 +41,11 @@ class Translations {
       'dealer': 'Dealer',
       'score': 'Score',
       'high_scores': 'HIGH SCORES',
+      'no_high_scores_yet': 'No high scores yet. Play a game to set the first record!',
+      'game_rules': 'Game Rules',
     },
     'de': {
-      'start_new_game': 'Neues Spiel starten',
+      'start_new_game': 'Neues Spiel',
       'game_title': 'Arcana: Das Spiel der Prophezeiung',
       'welcome_title': 'Willkommen bei Arcana',
       'welcome_text': 'In diesem mystischen Wettstreit geht der Sieg nicht an den mit der stärksten Hand, sondern an den, der die Zukunft sehen kann.',
@@ -83,6 +85,8 @@ class Translations {
       'dealer': 'Geber',
       'score': 'Punkte',
       'high_scores': 'BESTENLISTE',
+      'no_high_scores_yet': 'Noch keine Bestenliste. Spiele ein Spiel, um den ersten Rekord aufzustellen!',
+      'game_rules': 'Spielregeln',
     },
   };
 }
