@@ -51,6 +51,17 @@ class CardWidget extends StatelessWidget {
     }
   }
 
+  String get _semanticLabel {
+    if (card.type == CardType.ARCANUM) return "Arcanum Card";
+    if (card.type == CardType.SHADOW) return "Shadow Card";
+
+    String suitName = card.color.name;
+    // Capitalize first letter (e.g. "BLOOD" -> "Blood")
+    suitName = suitName[0].toUpperCase() + suitName.substring(1).toLowerCase();
+
+    return "${card.value} of $suitName";
+  }
+
   @override
   Widget build(BuildContext context) {
     // Scale factor based on width (default 80)
@@ -60,10 +71,15 @@ class CardWidget extends StatelessWidget {
     final centerIconSize = 40 * scale;
     final centerTextSize = 10 * scale;
     final centerSuitSize = 28 * scale;
-    
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
+
+    return Semantics(
+      label: _semanticLabel,
+      button: true, // It acts as a button if onTap is provided
+      enabled: onTap != null,
+      selected: isSelected,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: width,
         height: height,
@@ -230,7 +246,9 @@ class CardWidget extends StatelessWidget {
             ],
           ),
         ),
+        ),
       ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.2, end: 0),
+      ),
     );
   }
 }
