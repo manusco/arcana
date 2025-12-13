@@ -765,6 +765,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: loc.translate('scoreboard_tooltip'),
                   ),
                 ],
               ),
@@ -917,8 +918,12 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber),
               ),
+              prefixIcon: const Icon(Icons.person, color: Colors.white70),
             ),
             style: const TextStyle(color: Colors.white),
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.name],
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
@@ -932,6 +937,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_player_count'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +948,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_player_count'),
               ),
             ],
           ),

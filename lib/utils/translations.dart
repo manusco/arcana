@@ -43,6 +43,9 @@ class Translations {
       'high_scores': 'HIGH SCORES',
       'no_high_scores_yet': 'No high scores yet. Play a game to set the first record!',
       'game_rules': 'Game Rules',
+      'decrease_player_count': 'Decrease player count',
+      'increase_player_count': 'Increase player count',
+      'scoreboard_tooltip': 'Show Scoreboard',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -87,6 +90,9 @@ class Translations {
       'high_scores': 'BESTENLISTE',
       'no_high_scores_yet': 'Noch keine Bestenliste. Spiele ein Spiel, um den ersten Rekord aufzustellen!',
       'game_rules': 'Spielregeln',
+      'decrease_player_count': 'Spieleranzahl verringern',
+      'increase_player_count': 'Spieleranzahl erhöhen',
+      'scoreboard_tooltip': 'Punktetafel anzeigen',
     },
   };
 }
