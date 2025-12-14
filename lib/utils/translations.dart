@@ -43,6 +43,15 @@ class Translations {
       'high_scores': 'HIGH SCORES',
       'no_high_scores_yet': 'No high scores yet. Play a game to set the first record!',
       'game_rules': 'Game Rules',
+      // Accessibility
+      'a11y_card_arcanum': 'Arcanum Card',
+      'a11y_card_shadow': 'Shadow Card',
+      'suit_blood': 'Blood',
+      'suit_spirit': 'Spirit',
+      'suit_nature': 'Nature',
+      'suit_light': 'Light',
+      'card_of': 'of',
+      'a11y_play_card': 'Double tap to play',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -87,6 +96,15 @@ class Translations {
       'high_scores': 'BESTENLISTE',
       'no_high_scores_yet': 'Noch keine Bestenliste. Spiele ein Spiel, um den ersten Rekord aufzustellen!',
       'game_rules': 'Spielregeln',
+      // Accessibility
+      'a11y_card_arcanum': 'Arcanum Karte',
+      'a11y_card_shadow': 'Schatten Karte',
+      'suit_blood': 'Blut',
+      'suit_spirit': 'Geist',
+      'suit_nature': 'Natur',
+      'suit_light': 'Licht',
+      'card_of': 'von',
+      'a11y_play_card': 'Doppeltippen zum Spielen',
     },
   };
 }

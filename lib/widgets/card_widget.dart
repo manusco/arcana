@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../models/card.dart' as game;
 import '../models/enums.dart';
+import '../services/localization_service.dart';
 
 class CardWidget extends StatelessWidget {
   final game.Card card;
@@ -60,10 +62,27 @@ class CardWidget extends StatelessWidget {
     final centerIconSize = 40 * scale;
     final centerTextSize = 10 * scale;
     final centerSuitSize = 28 * scale;
+
+    final loc = context.read<LocalizationService>();
+    String semanticLabel = "";
+    if (card.type == CardType.ARCANUM) {
+      semanticLabel = loc.translate('a11y_card_arcanum');
+    } else if (card.type == CardType.SHADOW) {
+      semanticLabel = loc.translate('a11y_card_shadow');
+    } else {
+      String suitKey = 'suit_${card.color.name.toLowerCase()}';
+      String suitName = loc.translate(suitKey);
+      semanticLabel = "${card.value} ${loc.translate('card_of')} $suitName";
+    }
     
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
+    return Semantics(
+      label: semanticLabel,
+      button: true,
+      hint: onTap != null ? loc.translate('a11y_play_card') : null,
+      excludeSemantics: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: width,
         height: height,
@@ -230,7 +249,8 @@ class CardWidget extends StatelessWidget {
             ],
           ),
         ),
-      ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.2, end: 0),
+        ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.2, end: 0),
+      ),
     );
   }
 }
