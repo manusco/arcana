@@ -44,6 +44,10 @@ class Translations {
       'no_high_scores_yet': 'No high scores yet. Play a game to set the first record!',
       'game_rules': 'Game Rules',
       // Accessibility
+      'close_tooltip': 'Close',
+      'scoreboard_tooltip': 'Scoreboard',
+      'decrease_players_tooltip': 'Decrease player count',
+      'increase_players_tooltip': 'Increase player count',
       'a11y_card_arcanum': 'Arcanum Card',
       'a11y_card_shadow': 'Shadow Card',
       'suit_blood': 'Blood',
@@ -97,6 +101,10 @@ class Translations {
       'no_high_scores_yet': 'Noch keine Bestenliste. Spiele ein Spiel, um den ersten Rekord aufzustellen!',
       'game_rules': 'Spielregeln',
       // Accessibility
+      'close_tooltip': 'Schließen',
+      'scoreboard_tooltip': 'Punktetafel',
+      'decrease_players_tooltip': 'Spieleranzahl verringern',
+      'increase_players_tooltip': 'Spieleranzahl erhöhen',
       'a11y_card_arcanum': 'Arcanum Karte',
       'a11y_card_shadow': 'Schatten Karte',
       'suit_blood': 'Blut',

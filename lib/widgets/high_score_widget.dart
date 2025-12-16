@@ -63,6 +63,7 @@ class HighScoreWidget extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.close, color: Colors.amber),
                 onPressed: () => Navigator.pop(context),
+                tooltip: context.watch<LocalizationService>().translate('close_tooltip'),
               ),
             ],
           ),
