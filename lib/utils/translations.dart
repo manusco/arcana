@@ -52,6 +52,10 @@ class Translations {
       'suit_light': 'Light',
       'card_of': 'of',
       'a11y_play_card': 'Double tap to play',
+      'close_rules': 'Close Rules',
+      'scoreboard_tooltip': 'Scoreboard',
+      'decrease_player_count': 'Decrease player count',
+      'increase_player_count': 'Increase player count',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -105,6 +109,10 @@ class Translations {
       'suit_light': 'Licht',
       'card_of': 'von',
       'a11y_play_card': 'Doppeltippen zum Spielen',
+      'close_rules': 'Regeln schließen',
+      'scoreboard_tooltip': 'Punktetafel',
+      'decrease_player_count': 'Spieleranzahl verringern',
+      'increase_player_count': 'Spieleranzahl erhöhen',
     },
   };
 }
