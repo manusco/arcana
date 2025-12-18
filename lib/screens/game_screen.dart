@@ -103,6 +103,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close_rules_tooltip'),
                     ),
                   ],
                 ),
@@ -765,6 +766,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: loc.translate('scoreboard_tooltip'),
                   ),
                 ],
               ),
@@ -932,6 +934,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_players_tooltip'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +945,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_players_tooltip'),
               ),
             ],
           ),
@@ -973,16 +977,21 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget _languageBtn(BuildContext context, String code, String flag) {
     final loc = context.watch<LocalizationService>();
     final isSelected = loc.currentLocale.languageCode == code;
-    return GestureDetector(
-      onTap: () => loc.changeLocale(code),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected ? Border.all(color: Colors.amber) : null,
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: "${loc.translate('language_select_tooltip')} $code",
+      child: GestureDetector(
+        onTap: () => loc.changeLocale(code),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? Border.all(color: Colors.amber) : null,
+          ),
+          child: Text(flag, style: const TextStyle(fontSize: 24)),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
