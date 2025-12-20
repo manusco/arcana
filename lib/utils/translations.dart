@@ -52,6 +52,9 @@ class Translations {
       'suit_light': 'Light',
       'card_of': 'of',
       'a11y_play_card': 'Double tap to play',
+      'action_select': 'Select',
+      'lang_en': 'English',
+      'lang_de': 'German',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -105,6 +108,9 @@ class Translations {
       'suit_light': 'Licht',
       'card_of': 'von',
       'a11y_play_card': 'Doppeltippen zum Spielen',
+      'action_select': 'Auswählen',
+      'lang_en': 'Englisch',
+      'lang_de': 'Deutsch',
     },
   };
 }
