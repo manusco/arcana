@@ -102,6 +102,7 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
+                      tooltip: context.watch<LocalizationService>().translate('close'),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -764,6 +765,7 @@ class _GameScreenState extends State<GameScreen> {
                   const SizedBox(width: 10),
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
+                    tooltip: loc.translate('scoreboard_title'),
                     onPressed: () => _showScoreboard(context, state.players),
                   ),
                 ],
@@ -816,23 +818,27 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.watch<LocalizationService>().translate('close'))),
         ],
       ),
     );
   }
 
   Widget _colorBtn(CardColor color, GameViewModel vm) {
-    return GestureDetector(
-      onTap: () => vm.setTrumpColor(color),
-      child: Container(
-        width: 60,
-        height: 60,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: _getColor(color),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
+    return Semantics(
+      button: true,
+      label: "${context.watch<LocalizationService>().translate('select_color')} ${color.name}",
+      child: GestureDetector(
+        onTap: () => vm.setTrumpColor(color),
+        child: Container(
+          width: 60,
+          height: 60,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _getColor(color),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+          ),
         ),
       ),
     );
@@ -929,6 +935,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
@@ -939,6 +946,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
@@ -973,16 +981,21 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget _languageBtn(BuildContext context, String code, String flag) {
     final loc = context.watch<LocalizationService>();
     final isSelected = loc.currentLocale.languageCode == code;
-    return GestureDetector(
-      onTap: () => loc.changeLocale(code),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+    return Semantics(
+      button: true,
+      label: "${loc.translate('select_language')} $code",
+      selected: isSelected,
+      child: GestureDetector(
+        onTap: () => loc.changeLocale(code),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          border: isSelected ? Border.all(color: Colors.amber) : null,
+            border: isSelected ? Border.all(color: Colors.amber) : null,
+          ),
+          child: Text(flag, style: const TextStyle(fontSize: 24)),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
