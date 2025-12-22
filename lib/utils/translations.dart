@@ -52,6 +52,11 @@ class Translations {
       'suit_light': 'Light',
       'card_of': 'of',
       'a11y_play_card': 'Double tap to play',
+      'scoreboard_tooltip': 'View Scoreboard',
+      'decrease_players_tooltip': 'Decrease player count',
+      'increase_players_tooltip': 'Increase player count',
+      'close_tooltip': 'Close',
+      'select_color_action': 'Select',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -105,6 +110,11 @@ class Translations {
       'suit_light': 'Licht',
       'card_of': 'von',
       'a11y_play_card': 'Doppeltippen zum Spielen',
+      'scoreboard_tooltip': 'Punktetafel anzeigen',
+      'decrease_players_tooltip': 'Spieleranzahl verringern',
+      'increase_players_tooltip': 'Spieleranzahl erhöhen',
+      'close_tooltip': 'Schließen',
+      'select_color_action': 'Wählen',
     },
   };
 }
