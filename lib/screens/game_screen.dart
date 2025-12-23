@@ -738,10 +738,10 @@ class _GameScreenState extends State<GameScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _colorBtn(CardColor.BLOOD, vm),
-                          _colorBtn(CardColor.SPIRIT, vm),
-                          _colorBtn(CardColor.NATURE, vm),
-                          _colorBtn(CardColor.LIGHT, vm),
+                          _colorBtn(CardColor.BLOOD, vm, loc),
+                          _colorBtn(CardColor.SPIRIT, vm, loc),
+                          _colorBtn(CardColor.NATURE, vm, loc),
+                          _colorBtn(CardColor.LIGHT, vm, loc),
                         ],
                       ),
                     ],
@@ -822,17 +822,43 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _colorBtn(CardColor color, GameViewModel vm) {
-    return GestureDetector(
-      onTap: () => vm.setTrumpColor(color),
-      child: Container(
-        width: 60,
-        height: 60,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: _getColor(color),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
+  Widget _colorBtn(CardColor color, GameViewModel vm, LocalizationService loc) {
+    String colorName = '';
+    switch (color) {
+      case CardColor.BLOOD:
+        colorName = loc.translate('suit_blood');
+        break;
+      case CardColor.SPIRIT:
+        colorName = loc.translate('suit_spirit');
+        break;
+      case CardColor.NATURE:
+        colorName = loc.translate('suit_nature');
+        break;
+      case CardColor.LIGHT:
+        colorName = loc.translate('suit_light');
+        break;
+      default:
+        colorName = '';
+    }
+
+    return Tooltip(
+      message: colorName,
+      child: Semantics(
+        button: true,
+        label: colorName,
+        onTap: () => vm.setTrumpColor(color),
+        child: GestureDetector(
+          onTap: () => vm.setTrumpColor(color),
+          child: Container(
+            width: 60,
+            height: 60,
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: _getColor(color),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+            ),
+          ),
         ),
       ),
     );
