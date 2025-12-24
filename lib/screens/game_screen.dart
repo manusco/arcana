@@ -823,16 +823,36 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _colorBtn(CardColor color, GameViewModel vm) {
-    return GestureDetector(
-      onTap: () => vm.setTrumpColor(color),
-      child: Container(
-        width: 60,
-        height: 60,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: _getColor(color),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
+    String labelKey;
+    switch (color) {
+      case CardColor.BLOOD:
+        labelKey = 'select_color_blood';
+        break;
+      case CardColor.SPIRIT:
+        labelKey = 'select_color_spirit';
+        break;
+      case CardColor.NATURE:
+        labelKey = 'select_color_nature';
+        break;
+      case CardColor.LIGHT:
+        labelKey = 'select_color_light';
+        break;
+    }
+
+    return Semantics(
+      button: true,
+      label: context.watch<LocalizationService>().translate(labelKey),
+      child: GestureDetector(
+        onTap: () => vm.setTrumpColor(color),
+        child: Container(
+          width: 60,
+          height: 60,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _getColor(color),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+          ),
         ),
       ),
     );
@@ -906,10 +926,12 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.givenName],
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: '',
+              hintText: 'e.g. Merlin',
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -929,6 +951,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('decrease_player_count'),
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
@@ -939,6 +962,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('increase_player_count'),
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
@@ -973,16 +997,34 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget _languageBtn(BuildContext context, String code, String flag) {
     final loc = context.watch<LocalizationService>();
     final isSelected = loc.currentLocale.languageCode == code;
-    return GestureDetector(
-      onTap: () => loc.changeLocale(code),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected ? Border.all(color: Colors.amber) : null,
+
+    String labelKey;
+    switch (code) {
+      case 'en':
+        labelKey = 'change_language_en';
+        break;
+      case 'de':
+        labelKey = 'change_language_de';
+        break;
+      default:
+        labelKey = 'change_language_en';
+    }
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: loc.translate(labelKey),
+      child: GestureDetector(
+        onTap: () => loc.changeLocale(code),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? Border.all(color: Colors.amber) : null,
+          ),
+          child: Text(flag, style: const TextStyle(fontSize: 24)),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
