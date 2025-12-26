@@ -765,6 +765,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: loc.translate('scoreboard_title'),
                   ),
                 ],
               ),
