@@ -764,6 +764,7 @@ class _GameScreenState extends State<GameScreen> {
                   const SizedBox(width: 10),
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
+                    tooltip: loc.translate('scoreboard_title'),
                     onPressed: () => _showScoreboard(context, state.players),
                   ),
                 ],
@@ -906,6 +907,11 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
+            autofocus: true,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
