@@ -909,7 +909,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: '',
+              hintText: context.watch<LocalizationService>().translate('player_name_hint'),
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -919,6 +919,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
             ),
             style: const TextStyle(color: Colors.white),
+            textCapitalization: TextCapitalization.words,
+            keyboardType: TextInputType.name,
+            autofillHints: const [AutofillHints.name],
+            textInputAction: TextInputAction.done,
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
@@ -932,6 +936,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +947,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
               ),
             ],
           ),
