@@ -103,6 +103,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close_rules'),
                     ),
                   ],
                 ),
@@ -765,6 +766,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: loc.translate('leaderboard'),
                   ),
                 ],
               ),
@@ -823,16 +825,21 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _colorBtn(CardColor color, GameViewModel vm) {
-    return GestureDetector(
-      onTap: () => vm.setTrumpColor(color),
-      child: Container(
-        width: 60,
-        height: 60,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: _getColor(color),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
+    String colorName = color.toString().split('.').last;
+    return Semantics(
+      button: true,
+      label: context.watch<LocalizationService>().translate('select_color_tooltip').replaceAll('%s', colorName),
+      child: GestureDetector(
+        onTap: () => vm.setTrumpColor(color),
+        child: Container(
+          width: 60,
+          height: 60,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: _getColor(color),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 2),
+          ),
         ),
       ),
     );
@@ -906,10 +913,13 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: '',
+              hintText: context.watch<LocalizationService>().translate('enter_name'),
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -932,6 +942,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +953,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
               ),
             ],
           ),
