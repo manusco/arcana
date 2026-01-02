@@ -43,6 +43,11 @@ class Translations {
       'high_scores': 'HIGH SCORES',
       'no_high_scores_yet': 'No high scores yet. Play a game to set the first record!',
       'game_rules': 'Game Rules',
+      'decrease_players': 'Decrease player count',
+      'increase_players': 'Increase player count',
+      'close': 'Close',
+      'lang_en': 'Select English',
+      'lang_de': 'Select German',
       // Accessibility
       'a11y_card_arcanum': 'Arcanum Card',
       'a11y_card_shadow': 'Shadow Card',
@@ -96,6 +101,11 @@ class Translations {
       'high_scores': 'BESTENLISTE',
       'no_high_scores_yet': 'Noch keine Bestenliste. Spiele ein Spiel, um den ersten Rekord aufzustellen!',
       'game_rules': 'Spielregeln',
+      'decrease_players': 'Spielerzahl verringern',
+      'increase_players': 'Spielerzahl erhöhen',
+      'close': 'Schließen',
+      'lang_en': 'Englisch auswählen',
+      'lang_de': 'Deutsch auswählen',
       // Accessibility
       'a11y_card_arcanum': 'Arcanum Karte',
       'a11y_card_shadow': 'Schatten Karte',
