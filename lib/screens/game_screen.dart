@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -103,6 +104,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close'),
                     ),
                   ],
                 ),
@@ -816,7 +818,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.watch<LocalizationService>().translate('close'))),
         ],
       ),
     );
@@ -906,6 +908,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.name],
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
@@ -932,6 +938,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +949,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
               ),
             ],
           ),
@@ -973,16 +981,21 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget _languageBtn(BuildContext context, String code, String flag) {
     final loc = context.watch<LocalizationService>();
     final isSelected = loc.currentLocale.languageCode == code;
-    return GestureDetector(
-      onTap: () => loc.changeLocale(code),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected ? Border.all(color: Colors.amber) : null,
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: loc.translate(code == 'en' ? 'lang_en' : 'lang_de'),
+      child: GestureDetector(
+        onTap: () => loc.changeLocale(code),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? Border.all(color: Colors.amber) : null,
+          ),
+          child: Text(flag, style: const TextStyle(fontSize: 24)),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
