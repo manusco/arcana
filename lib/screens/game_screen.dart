@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -906,10 +907,14 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: '',
+              hintText: context.watch<LocalizationService>().translate('name_hint'),
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -929,6 +934,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
@@ -939,6 +945,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
@@ -973,16 +980,21 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
   Widget _languageBtn(BuildContext context, String code, String flag) {
     final loc = context.watch<LocalizationService>();
     final isSelected = loc.currentLocale.languageCode == code;
-    return GestureDetector(
-      onTap: () => loc.changeLocale(code),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected ? Border.all(color: Colors.amber) : null,
+    return Semantics(
+      button: true,
+      label: loc.translate(code == 'en' ? 'select_en' : 'select_de'),
+      selected: isSelected,
+      child: GestureDetector(
+        onTap: () => loc.changeLocale(code),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: isSelected ? Border.all(color: Colors.amber) : null,
+          ),
+          child: Text(flag, style: const TextStyle(fontSize: 24)),
         ),
-        child: Text(flag, style: const TextStyle(fontSize: 24)),
       ),
     );
   }
