@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -103,6 +104,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close'),
                     ),
                   ],
                 ),
@@ -905,11 +907,12 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           //   onPressed: widget.onShowHighScores,
           // ),
           const SizedBox(height: 10),
+          // Need to import services for autofill
           TextField(
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
-              hintText: '',
+              hintText: context.watch<LocalizationService>().translate('enter_name'),
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
@@ -920,6 +923,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             ),
             style: const TextStyle(color: Colors.white),
             onChanged: (value) => setState(() => _username = value.trim()),
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
           ),
           const SizedBox(height: 24),
           Text("${context.watch<LocalizationService>().translate('number_of_players')}:", style: const TextStyle(color: Colors.white70)),
@@ -932,6 +939,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('remove_player'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +950,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('add_player'),
               ),
             ],
           ),
