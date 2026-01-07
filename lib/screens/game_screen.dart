@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -103,6 +104,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close'),
                     ),
                   ],
                 ),
@@ -765,6 +767,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: context.watch<LocalizationService>().translate('scoreboard_title'),
                   ),
                 ],
               ),
@@ -919,6 +922,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
             ),
             style: const TextStyle(color: Colors.white),
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
@@ -932,6 +939,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('remove_player'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -942,6 +950,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('add_player'),
               ),
             ],
           ),
