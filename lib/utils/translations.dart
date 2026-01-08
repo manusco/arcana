@@ -52,6 +52,9 @@ class Translations {
       'suit_light': 'Light',
       'card_of': 'of',
       'a11y_play_card': 'Double tap to play',
+      'close': 'Close',
+      'add_player': 'Add Player',
+      'remove_player': 'Remove Player',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -105,6 +108,9 @@ class Translations {
       'suit_light': 'Licht',
       'card_of': 'von',
       'a11y_play_card': 'Doppeltippen zum Spielen',
+      'close': 'Schließen',
+      'add_player': 'Spieler hinzufügen',
+      'remove_player': 'Spieler entfernen',
     },
   };
 }
