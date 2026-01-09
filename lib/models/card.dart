@@ -15,6 +15,15 @@ class Card {
     required this.imageAssetPath,
   });
 
+  factory Card.dummy() => Card(
+        type: CardType.NUMBER,
+        color: CardColor.NONE,
+        id: "dummy",
+        imageAssetPath: "",
+      );
+
+  bool get isDummy => id == "dummy";
+
   bool isTrump(CardColor? trumpColor) {
     if (type == CardType.ARCANUM) return false; // Arcanums are not "trump suit", they are super-trump
     if (type == CardType.SHADOW) return false;
@@ -26,35 +35,35 @@ class Card {
   bool beats(Card other, CardColor? trumpColor, CardColor? leadColor) {
     // 1. Arcanums
     if (other.type == CardType.ARCANUM) return false; // First Arcanum wins, so nothing beats it
-    if (this.type == CardType.ARCANUM) return true; // This is Arcanum, other is not, so this wins
+    if (type == CardType.ARCANUM) return true; // This is Arcanum, other is not, so this wins
 
     // 2. Trumps
-    bool thisIsTrump = this.isTrump(trumpColor);
+    bool thisIsTrump = isTrump(trumpColor);
     bool otherIsTrump = other.isTrump(trumpColor);
 
     if (otherIsTrump) {
       if (!thisIsTrump) return false;
       // Both are trump: higher value wins
-      return this.value > other.value;
+      return value > other.value;
     }
     if (thisIsTrump) return true; // This is trump, other is not
 
     // 3. Lead Color
     // If we are here, neither is Wizard or Trump (or other is not Trump)
     bool otherIsLead = other.color == leadColor && other.type == CardType.NUMBER;
-    bool thisIsLead = this.color == leadColor && this.type == CardType.NUMBER;
+    bool thisIsLead = color == leadColor && type == CardType.NUMBER;
 
     if (otherIsLead) {
       if (!thisIsLead) return false;
       // Both are lead color: higher value wins
-      return this.value > other.value;
+      return value > other.value;
     }
     if (thisIsLead) return true;
 
     // 4. Shadows and Off-suit non-trumps
     // If other is Shadow, almost anything beats it (except another Shadow played later)
     if (other.type == CardType.SHADOW) {
-       if (this.type == CardType.SHADOW) return false; // First Shadow wins against subsequent Shadows
+       if (type == CardType.SHADOW) return false; // First Shadow wins against subsequent Shadows
        return true; // Any non-Shadow beats a Shadow (if Shadow was leading/winning)
     }
 

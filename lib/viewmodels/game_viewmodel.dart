@@ -6,10 +6,12 @@ import '../models/enums.dart';
 import '../services/game_service.dart';
 import '../services/ai_service.dart';
 import '../services/high_score_service.dart';
+import '../services/localization_service.dart';
 
 class GameViewModel extends ChangeNotifier {
   final GameService _gameService = GameService();
   final AiService _aiService = AiService();
+  LocalizationService? _localizationService;
 
   GamePhase _phase = GamePhase.SETUP;
   GamePhase get phase => _phase;
@@ -23,8 +25,22 @@ class GameViewModel extends ChangeNotifier {
   String? _username;
   String? get username => _username;
 
+  void setLocalizationService(LocalizationService service) {
+    _localizationService = service;
+  }
+
+  String _t(String key, {Map<String, String>? params}) {
+    String text = _localizationService?.translate(key) ?? key;
+    if (params != null) {
+      params.forEach((key, value) {
+        text = text.replaceAll('{$key}', value);
+      });
+    }
+    return text;
+  }
+
   void startGame(int playerCount, [String? username]) {
-    print("startGame called with $playerCount players");
+
     try {
       _username = username;
       
@@ -53,13 +69,13 @@ class GameViewModel extends ChangeNotifier {
         ));
       }
       
-      print("Initializing game service...");
+
       _gameService.initGame(players);
-      print("Game initialized. Starting round...");
+
       _startRound();
-    } catch (e, stack) {
-      print("Error in startGame: $e");
-      print(stack);
+    } catch (e) {
+
+
       _statusMessage = "Error starting game: $e";
       notifyListeners();
     }
@@ -70,11 +86,11 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void _startRound() {
-    print("_startRound called");
+
     try {
       _phase = GamePhase.SETUP;
       _gameService.startRound();
-      print("Round started in service. Notifying listeners...");
+
       notifyListeners();
 
       // Check if Dealer needs to choose Trump (Wizard turned up)
@@ -83,20 +99,20 @@ class GameViewModel extends ChangeNotifier {
         if (dealer is BotPlayer) {
           // Bot chooses trump (random for now, or based on hand)
           _gameService.gameState.trumpColor = CardColor.values[DateTime.now().millisecond % 4]; // Random valid color
-          _statusMessage = "${dealer.name} chose ${_gameService.gameState.trumpColor?.name} as Trump";
+          _statusMessage = _t('player_chose_trump', params: {'player': dealer.name, 'trump': _gameService.gameState.trumpColor?.name ?? ''});
           _advanceToBidding();
         } else {
           // Human dealer - UI should show dialog
-          _statusMessage = "Choose a Trump Color!";
+          _statusMessage = _t('choose_trump_color');
           notifyListeners();
           // Wait for user input via setTrumpColor
         }
       } else {
         _advanceToBidding();
       }
-    } catch (e, stack) {
-      print("Error in _startRound: $e");
-      print(stack);
+    } catch (e) {
+
+
       _statusMessage = "Error starting round: $e";
       notifyListeners();
     }
@@ -111,7 +127,7 @@ class GameViewModel extends ChangeNotifier {
 
   void _advanceToBidding() {
     _phase = GamePhase.BIDDING;
-    _statusMessage = "Bidding Phase";
+    _statusMessage = _t('bidding_phase');
     notifyListeners();
     _processTurn();
   }
@@ -151,12 +167,12 @@ class GameViewModel extends ChangeNotifier {
         }
         
         current.predictedTricks = bid;
-        _statusMessage = "${current.name} bids $bid";
+        _statusMessage = _t('player_bids', params: {'player': current.name, 'bid': bid.toString()});
         notifyListeners();
         _nextPlayerBidding();
       } else {
         // Human turn - wait for UI
-        _statusMessage = "Your turn to bid!";
+        _statusMessage = _t('your_turn_to_bid');
         notifyListeners();
       }
     } else if (_phase == GamePhase.PLAYING) {
@@ -167,7 +183,7 @@ class GameViewModel extends ChangeNotifier {
         _playCardInternal(current, card);
       } else {
         // Human turn
-        _statusMessage = "Your turn to play!";
+        _statusMessage = _t('your_turn_to_play');
         notifyListeners();
       }
     }
@@ -184,7 +200,7 @@ class GameViewModel extends ChangeNotifier {
       // Everyone has bid
       _phase = GamePhase.PLAYING;
       _gameService.gameState.currentPlayerIndex = starterIndex; // Starter leads first trick
-      _statusMessage = "Play Phase Started!";
+      _statusMessage = _t('play_phase_started');
       notifyListeners();
       _processTurn();
     } else {
@@ -210,7 +226,7 @@ class GameViewModel extends ChangeNotifier {
       if (_gameService.isValidMove(current, card)) {
         _playCardInternal(current, card);
       } else {
-        _statusMessage = "Invalid Move!";
+        _statusMessage = _t('invalid_move');
         notifyListeners();
       }
     }
@@ -224,7 +240,7 @@ class GameViewModel extends ChangeNotifier {
       // Trick complete
       await Future.delayed(const Duration(milliseconds: 2000)); // Show trick result
       Player winner = _gameService.evaluateTrickWinner();
-      _statusMessage = "${winner.name} won the trick!";
+      _statusMessage = _t('player_won_trick', params: {'player': winner.name});
       _gameService.finishTrick(winner);
       notifyListeners();
 
@@ -232,14 +248,14 @@ class GameViewModel extends ChangeNotifier {
         // Round complete
         _gameService.finishRound();
         _phase = GamePhase.ROUND_OVER;
-        _statusMessage = "Round Over!";
+        _statusMessage = _t('round_over');
         notifyListeners();
         
         // Wait then start next round
         await Future.delayed(const Duration(seconds: 3));
         if (_gameService.gameState.round > 60 ~/ _gameService.gameState.players.length) {
            _phase = GamePhase.GAME_OVER;
-           _statusMessage = "Game Over!";
+           _statusMessage = _t('game_over');
            
            // Save high score if username provided
            if (_username != null && _username!.isNotEmpty) {

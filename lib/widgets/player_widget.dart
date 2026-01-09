@@ -24,15 +24,15 @@ class PlayerWidget extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       clipBehavior: Clip.none, // Allow badges to overflow
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
         border: isCurrentPlayer
             ? Border.all(color: Colors.transparent, width: 3)
-            : Border.all(color: Colors.white.withOpacity(0.1)),
+            : Border.all(color: Colors.white.withValues(alpha: 0.1)),
         boxShadow: isCurrentPlayer
             ? [
                 BoxShadow(
-                  color: const Color(0xFFFFD700).withOpacity(0.6),
+                  color: const Color(0xFFFFD700).withValues(alpha: 0.6),
                   blurRadius: 20,
                   spreadRadius: 4,
                 ),
@@ -53,9 +53,9 @@ class PlayerWidget extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      Colors.white.withOpacity(0.3),
-                      Colors.grey.withOpacity(0.2),
-                      Colors.white.withOpacity(0.3),
+                      Colors.white.withValues(alpha: 0.3),
+                      Colors.grey.withValues(alpha: 0.2),
+                      Colors.white.withValues(alpha: 0.3),
                     ],
                   ),
                 ),
@@ -84,7 +84,7 @@ class PlayerWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(1, 1)),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4, offset: const Offset(1, 1)),
                       ],
                     ),
                     child: const Text("D", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black)),
@@ -101,7 +101,7 @@ class PlayerWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 4, offset: const Offset(1, 1)),
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4, offset: const Offset(1, 1)),
                       ],
                     ),
                     child: const Icon(Icons.play_arrow, size: 16, color: Colors.black),
@@ -118,9 +118,9 @@ class PlayerWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
             ),
             child: Text(
               "${player.wonTricks} / ${player.predictedTricks}",

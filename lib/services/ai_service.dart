@@ -6,6 +6,15 @@ import '../models/player.dart';
 
 class AiService {
   final Random _random = Random();
+  
+  // Memoization cache to avoid redundant calculations within the same game state
+  final Map<String, double> _strengthCache = {};
+  final Map<String, double> _probabilityCache = {};
+
+  void _clearCache() {
+    _strengthCache.clear();
+    _probabilityCache.clear();
+  }
 
   // Probability-based Bidding
   int calculateBid(Player player, GameState gameState) {
@@ -14,6 +23,7 @@ class AiService {
     int totalPlayers = gameState.players.length;
     int cardsInHand = player.hand.length;
     
+    _clearCache();
     // Estimate strength of each card
     for (var card in player.hand) {
       double winProbability = _calculateWinProbability(card, player.hand, gameState);
@@ -37,68 +47,53 @@ class AiService {
   }
 
   double _calculateWinProbability(Card card, List<Card> hand, GameState gameState) {
-    // 1. Wizards are almost 100% win, unless played late in a trick with another Wizard.
-    // But in bidding, we assume we can play it strategically.
-    if (card.type == CardType.ARCANUM) return 1.0;
-    
-    // 2. Shadows are 0% win.
-    if (card.type == CardType.SHADOW) return 0.0;
-
-    int totalPlayers = gameState.players.length;
-    CardColor? trumpColor = gameState.trumpColor;
-    
-    // 3. Trumps
-    if (card.isTrump(trumpColor)) {
-      // Probability depends on value and how many trumps are out there.
-      // Simple model: (Value / 13) * (Strength factor)
-      // High trumps (11, 12, 13) are very strong.
-      // Low trumps (1-5) are weak if over-trumped, but strong if led or sloughed.
-      
-      // If I have the Ace of Trumps (13), prob is 1.0 (unless Wizard).
-      // If I have 1 of Trumps, prob is low, maybe 0.2?
-      
-      // Let's use a linear scale: 0.3 + (value/13 * 0.7)
-      // 13 -> 1.0
-      // 1 -> 0.35
-      return 0.3 + (card.value / 13.0) * 0.7;
+    final String cacheKey = "${card.id}_${gameState.trumpColor}_${hand.length}";
+    if (_probabilityCache.containsKey(cacheKey)) {
+      return _probabilityCache[cacheKey]!;
     }
 
-    // 4. Non-Trumps (Off-suit)
-    // Probability depends on:
-    // a) Is it high? (A, K, Q)
-    // b) Is the suit "long" or "short" in my hand?
-    //    If I have many cards of this suit, others might be void and trump me.
-    //    If I have few, I might be void later (good for me to trump, bad for this card to win).
+    double probability = 0.0;
     
-    // Base probability for high cards:
-    // A (13) -> 0.8 (risk of being trumped or Wizard)
-    // K (12) -> 0.6
-    // Q (11) -> 0.4
-    // Lower -> < 0.1
-    
-    double baseProb = 0.0;
-    if (card.value == 13) baseProb = 0.8;
-    else if (card.value == 12) baseProb = 0.6;
-    else if (card.value == 11) baseProb = 0.4;
-    else if (card.value >= 8) baseProb = 0.2;
-    
-    // Adjust by suit length in hand (more cards = higher risk of others being void)
-    int suitCount = hand.where((c) => c.color == card.color && c.type == CardType.NUMBER).length;
-    // If I have 5 cards of Red, likely someone else has none.
-    // Penalty factor: 1.0 - (suitCount * 0.1)
-    double penalty = 1.0 - ((suitCount - 1) * 0.1);
-    if (penalty < 0.1) penalty = 0.1;
-    
-    return baseProb * penalty;
+    // 1. Wizards are almost 100% win
+    if (card.type == CardType.ARCANUM) {
+      probability = 1.0;
+    } else if (card.type == CardType.SHADOW) {
+      // 2. Shadows are 0% win.
+      probability = 0.0;
+    } else {
+      CardColor? trumpColor = gameState.trumpColor;
+      
+      // 3. Trumps
+      if (card.isTrump(trumpColor)) {
+        probability = 0.3 + (card.value / 13.0) * 0.7;
+      } else {
+        // 4. Non-Trumps (Off-suit)
+        double baseProb = 0.0;
+        if (card.value == 13) baseProb = 0.8;
+        else if (card.value == 12) baseProb = 0.6;
+        else if (card.value == 11) baseProb = 0.4;
+        else if (card.value >= 8) baseProb = 0.2;
+        
+        // Adjust by suit length in hand
+        int suitCount = hand.where((c) => c.color == card.color && c.type == CardType.NUMBER).length;
+        double penalty = 1.0 - ((suitCount - 1) * 0.1);
+        if (penalty < 0.1) penalty = 0.1;
+        
+        probability = baseProb * penalty;
+      }
+    }
+
+    _probabilityCache[cacheKey] = probability;
+    return probability;
   }
 
   // Heuristic Play with "Smart" choices
   Card chooseCardToPlay(Player player, GameState gameState) {
+    _clearCache();
     List<Card> validCards = player.hand.where((c) => _isValidMove(c, player, gameState)).toList();
     if (validCards.isEmpty) return player.hand.first;
 
     bool wantToWin = player.wonTricks < player.predictedTricks;
-    bool mustLose = player.wonTricks > player.predictedTricks; // Already overbid
     
     // If we are exactly on target, we want to lose (usually safer to stay on target).
     // Unless it's the last trick and we need 0 more? No, if won == predicted, we want 0 more.
@@ -144,9 +139,9 @@ class AiService {
     }
     
     // Can't win with regular cards. Should we play Arcanum?
-    var arcanum = validCards.firstWhere((c) => c.type == CardType.ARCANUM, orElse: () => _dummy());
+    var arcanum = validCards.firstWhere((c) => c.type == CardType.ARCANUM, orElse: () => Card.dummy());
     
-    if (arcanum.id != "dummy") {
+    if (!arcanum.isDummy) {
       // Only play Arcanum if:
       // 1. No Arcanum was already played (we'd tie/lose), OR
       // 2. We're last to play (guaranteed win)
@@ -164,8 +159,8 @@ class AiService {
 
   Card _tryToLose(List<Card> validCards, GameState gameState) {
     // 1. Play Shadow if available (guaranteed lose usually).
-    var shadow = validCards.firstWhere((c) => c.type == CardType.SHADOW, orElse: () => _dummy());
-    if (shadow.id != "dummy") return shadow;
+    var shadow = validCards.firstWhere((c) => c.type == CardType.SHADOW, orElse: () => Card.dummy());
+    if (!shadow.isDummy) return shadow;
 
     // 2. If trick is empty (I lead):
     if (gameState.currentTrick.isEmpty) {
@@ -207,15 +202,28 @@ class AiService {
   }
 
   double _cardStrength(Card c, GameState gameState) {
-    if (c.type == CardType.ARCANUM) return 100;
-    if (c.type == CardType.SHADOW) return -1;
-    if (c.isTrump(gameState.trumpColor)) return 20 + c.value.toDouble();
-    if (c.type == CardType.NUMBER) return c.value.toDouble();
-    return 0;
+    final String cacheKey = "${c.id}_${gameState.trumpColor}";
+    if (_strengthCache.containsKey(cacheKey)) {
+      return _strengthCache[cacheKey]!;
+    }
+
+    double strength = 0.0;
+    if (c.type == CardType.ARCANUM) {
+      strength = 100;
+    } else if (c.type == CardType.SHADOW) {
+      strength = -1;
+    } else if (c.isTrump(gameState.trumpColor)) {
+      strength = 20 + c.value.toDouble();
+    } else if (c.type == CardType.NUMBER) {
+      strength = c.value.toDouble();
+    }
+
+    _strengthCache[cacheKey] = strength;
+    return strength;
   }
 
   Card _getCurrentWinner(GameState gameState) {
-    if (gameState.currentTrick.isEmpty) return _dummy();
+    if (gameState.currentTrick.isEmpty) return Card.dummy();
     
     var winner = gameState.currentTrick[0].card;
     for (int i = 1; i < gameState.currentTrick.length; i++) {
@@ -226,8 +234,6 @@ class AiService {
     }
     return winner;
   }
-
-  Card _dummy() => Card(type: CardType.NUMBER, color: CardColor.NONE, id: "dummy", imageAssetPath: "");
 
   bool _isValidMove(Card card, Player player, GameState gameState) {
     if (gameState.currentTrick.isEmpty) return true;

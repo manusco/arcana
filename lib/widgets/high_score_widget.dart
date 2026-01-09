@@ -29,10 +29,10 @@ class HighScoreWidget extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.withOpacity(0.3), width: 2),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.3), width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.amber.withOpacity(0.2),
+            color: Colors.amber.withValues(alpha: 0.2),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -78,13 +78,13 @@ class HighScoreWidget extends StatelessWidget {
                   Icon(
                     Icons.emoji_events_outlined,
                     size: 64,
-                    color: Colors.amber.withOpacity(0.3),
+                    color: Colors.amber.withValues(alpha: 0.3),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     context.watch<LocalizationService>().translate('no_high_scores_yet'),
                     style: GoogleFonts.roboto(
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                       fontSize: 16,
                     ),
                     textAlign: TextAlign.center,
@@ -101,12 +101,12 @@ class HighScoreWidget extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: rank == 1 
-                        ? const Color(0xFFFFD700).withOpacity(0.5)
-                        : Colors.white.withOpacity(0.1),
+                        ? const Color(0xFFFFD700).withValues(alpha: 0.5)
+                        : Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
                 child: Row(
@@ -118,7 +118,7 @@ class HighScoreWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: rank == 1 
                             ? const Color(0xFFFFD700)
-                            : Colors.white.withOpacity(0.2),
+                            : Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(

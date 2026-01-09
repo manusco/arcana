@@ -92,13 +92,13 @@ class CardWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(12 * scale),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 8 * scale,
               offset: Offset(2 * scale, 4 * scale),
             ),
             if (isSelected)
               BoxShadow(
-                color: _cardColor.withOpacity(0.6),
+                color: _cardColor.withValues(alpha: 0.6),
                 blurRadius: 12 * scale,
                 spreadRadius: 2 * scale,
               ),
@@ -219,7 +219,7 @@ class CardWidget extends StatelessWidget {
                                   _suitSymbol * (scale >= 0.8 ? 3 : 2),
                                   style: TextStyle(
                                     fontSize: centerSuitSize,
-                                    color: _cardColor.withOpacity(0.3),
+                                    color: _cardColor.withValues(alpha: 0.3),
                                     letterSpacing: 2 * scale,
                                   ),
                                 ),
@@ -237,9 +237,9 @@ class CardWidget extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.white.withOpacity(0.1),
+                          Colors.white.withValues(alpha: 0.1),
                           Colors.transparent,
-                          Colors.black.withOpacity(0.05),
+                          Colors.black.withValues(alpha: 0.05),
                         ],
                       ),
                     ),

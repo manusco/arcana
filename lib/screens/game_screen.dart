@@ -25,6 +25,11 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     // Delay to show dialog
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Set the localization service in the view model
+      final vm = context.read<GameViewModel>();
+      final loc = context.read<LocalizationService>();
+      vm.setLocalizationService(loc);
+      
       _showGameSetupDialog();
     });
   }
@@ -61,10 +66,10 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.amber.withOpacity(0.3), width: 2),
+            border: Border.all(color: Colors.amber.withValues(alpha: 0.3), width: 2),
             boxShadow: [
               BoxShadow(
-                color: Colors.amber.withOpacity(0.2),
+                color: Colors.amber.withValues(alpha: 0.2),
                 blurRadius: 20,
                 spreadRadius: 2,
               ),
@@ -79,7 +84,7 @@ class _GameScreenState extends State<GameScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Colors.amber.withOpacity(0.2),
+                      Colors.amber.withValues(alpha: 0.2),
                       Colors.transparent,
                     ],
                   ),
@@ -163,7 +168,7 @@ class _GameScreenState extends State<GameScreen> {
                         child: Text(
                           context.watch<LocalizationService>().translate('footer_text'),
                           style: GoogleFonts.cinzel(
-                            color: Colors.amber.withOpacity(0.8),
+                            color: Colors.amber.withValues(alpha: 0.8),
                             fontSize: 16,
                             fontStyle: FontStyle.italic,
                             letterSpacing: 1.2,
@@ -225,7 +230,7 @@ class _GameScreenState extends State<GameScreen> {
           Text(
             content,
             style: GoogleFonts.roboto(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 14,
               height: 1.5,
             ),
@@ -253,7 +258,7 @@ class _GameScreenState extends State<GameScreen> {
                   TextSpan(
                     text: "$name: ",
                     style: GoogleFonts.robotoMono(
-                      color: Colors.amber.withOpacity(0.9),
+                      color: Colors.amber.withValues(alpha: 0.9),
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
@@ -261,7 +266,7 @@ class _GameScreenState extends State<GameScreen> {
                   TextSpan(
                     text: description,
                     style: GoogleFonts.roboto(
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withValues(alpha: 0.85),
                       fontSize: 13,
                       height: 1.4,
                     ),
@@ -284,7 +289,7 @@ class _GameScreenState extends State<GameScreen> {
           Text(
             step,
             style: GoogleFonts.robotoMono(
-              color: Colors.amber.withOpacity(0.9),
+              color: Colors.amber.withValues(alpha: 0.9),
               fontSize: 13,
               fontWeight: FontWeight.bold,
             ),
@@ -293,7 +298,7 @@ class _GameScreenState extends State<GameScreen> {
           Text(
             description,
             style: GoogleFonts.roboto(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               fontSize: 13,
               height: 1.4,
             ),
@@ -321,7 +326,7 @@ class _GameScreenState extends State<GameScreen> {
             child: Text(
               description,
               style: GoogleFonts.roboto(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
                 fontSize: 13,
                 height: 1.4,
               ),
@@ -395,8 +400,8 @@ class _GameScreenState extends State<GameScreen> {
               gradient: RadialGradient(
                 colors: [
                   Colors.transparent,
-                  Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.5),
+                  Colors.black.withValues(alpha: 0.3),
+                  Colors.black.withValues(alpha: 0.5),
                 ],
                 radius: 1.2,
                 center: Alignment.center,
@@ -582,7 +587,7 @@ class _GameScreenState extends State<GameScreen> {
                 decoration: BoxDecoration(
                   color: Colors.black87,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.amber.withOpacity(0.5), width: 2),
+                  border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
                 ),
                 child: Text(
                   vm.statusMessage ?? "",
@@ -602,9 +607,9 @@ class _GameScreenState extends State<GameScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                      border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -649,12 +654,12 @@ class _GameScreenState extends State<GameScreen> {
                     width: 300, // Constrain width
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.85),
+                      color: Colors.black.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5), width: 2),
+                      border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.5), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           blurRadius: 10,
                           spreadRadius: 2,
                         ),
@@ -700,7 +705,7 @@ class _GameScreenState extends State<GameScreen> {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: isForbidden 
-                                      ? Colors.grey.withOpacity(0.3)
+                                      ? Colors.grey.withValues(alpha: 0.3)
                                       : const Color(0xFFFFD700),
                                   foregroundColor: isForbidden ? Colors.grey : Colors.black,
                                   padding: EdgeInsets.zero,
@@ -767,6 +772,35 @@ class _GameScreenState extends State<GameScreen> {
                     onPressed: () => _showScoreboard(context, state.players),
                   ),
                 ],
+              ),
+            ),
+            
+            // --- Logo Watermark ---
+            Positioned(
+              bottom: 80,
+              right: 20,
+              child: Opacity(
+                opacity: 0.3,
+                child: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.black,
+                    BlendMode.srcOut,
+                  ),
+                  child: Container(
+                    color: Colors.white,
+                    child: ColorFiltered(
+                      colorFilter: const ColorFilter.mode(
+                        Colors.white,
+                        BlendMode.srcOut,
+                      ),
+                      child: Image.asset(
+                        'assets/images/logo.jpg',
+                        height: 60,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
               ],
@@ -887,7 +921,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           IconButton(
             icon: const Icon(Icons.help_outline, color: Colors.amber),
             onPressed: widget.onShowRules != null ? () {
-              print("Help icon clicked. Calling onShowRules.");
+
               widget.onShowRules!();
             } : null,
             tooltip: context.watch<LocalizationService>().translate('how_to_play_title'),
@@ -897,11 +931,33 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Logo
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Colors.black,
+              BlendMode.srcOut,
+            ),
+            child: Container(
+              color: Colors.white,
+              child: ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcOut,
+                ),
+                child: Image.asset(
+                  'assets/images/logo.jpg',
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
           // Language Toggle
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _languageBtn(context, 'en', '🇺🇸'),
+              _languageBtn(context, 'en', '🇬🇧'),
               const SizedBox(width: 20),
               _languageBtn(context, 'de', '🇩🇪'),
             ],
@@ -920,7 +976,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               hintText: '',
               hintStyle: const TextStyle(color: Colors.white38),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.amber.withOpacity(0.5)),
+                borderSide: BorderSide(color: Colors.amber.withValues(alpha: 0.5)),
               ),
               focusedBorder: const UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.amber),
@@ -993,7 +1049,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.amber.withOpacity(0.2) : Colors.transparent,
+            color: isSelected ? Colors.amber.withValues(alpha: 0.2) : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: isSelected ? Border.all(color: Colors.amber) : null,
           ),

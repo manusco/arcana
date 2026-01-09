@@ -73,10 +73,12 @@ class GameService {
 
     // 2. Deal Cards
     int cardsToDeal = _gameState.round;
-    // Check if we have enough cards (60 max)
-    // 60 / players. If round > 60/players, game over usually.
-    // Standard Wizard: Rounds increase until deck is exhausted.
-    // e.g. 3 players -> 20 rounds. 4 players -> 15 rounds.
+    int totalPlayers = _gameState.players.length;
+    
+    // QA-01: Check if we have enough cards (60 max)
+    if (cardsToDeal * totalPlayers > 60) {
+      throw Exception("Insufficient cards for round ${_gameState.round} with $totalPlayers players.");
+    }
     
     for (int i = 0; i < cardsToDeal; i++) {
       for (var player in _gameState.players) {
@@ -122,6 +124,11 @@ class GameService {
 
   // Check if a move is valid
   bool isValidMove(Player player, Card card) {
+    // QA-02: If trump is needed (ARCANUM turned up) but not yet chosen, move is invalid
+    if (_gameState.trumpCard?.type == CardType.ARCANUM && _gameState.trumpColor == null) {
+      return false;
+    }
+
     if (_gameState.currentTrick.isEmpty) return true; // Lead any card
 
     CardColor? leadColor = _gameState.leadColor;
@@ -144,6 +151,9 @@ class GameService {
   }
 
   void playCard(Player player, Card card) {
+    if (!isValidMove(player, card)) {
+      throw StateError("Invalid move: ${card.id} cannot be played now (check trump color selection).");
+    }
     player.hand.remove(card);
     _gameState.currentTrick.add(PlayedCard(card: card, playerId: player.id));
     
