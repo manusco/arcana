@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -970,6 +971,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
@@ -993,6 +998,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('decrease_player_count'),
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
@@ -1003,6 +1009,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('increase_player_count'),
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
