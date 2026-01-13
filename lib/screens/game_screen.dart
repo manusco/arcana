@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -770,6 +771,7 @@ class _GameScreenState extends State<GameScreen> {
                   IconButton(
                     icon: const Icon(Icons.leaderboard_rounded, color: Colors.white, size: 32),
                     onPressed: () => _showScoreboard(context, state.players),
+                    tooltip: loc.translate('scoreboard_title'),
                   ),
                 ],
               ),
@@ -983,6 +985,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
             ),
             style: const TextStyle(color: Colors.white),
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
