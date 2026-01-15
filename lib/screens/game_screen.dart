@@ -109,6 +109,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close_tooltip'),
                     ),
                   ],
                 ),
@@ -1002,6 +1003,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_players_tooltip'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1012,6 +1014,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_players_tooltip'),
               ),
             ],
           ),
