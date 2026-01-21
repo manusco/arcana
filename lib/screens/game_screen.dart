@@ -109,6 +109,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close_rules'),
                     ),
                   ],
                 ),
@@ -998,20 +999,18 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.remove_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount > 2) setState(() => _playerCount--);
-                },
+                icon: Icon(Icons.remove_circle, color: _playerCount > 2 ? Colors.amber : Colors.grey),
+                onPressed: _playerCount > 2 ? () => setState(() => _playerCount--) : null,
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text("$_playerCount", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
               ),
               IconButton(
-                icon: const Icon(Icons.add_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount < 6) setState(() => _playerCount++);
-                },
+                icon: Icon(Icons.add_circle, color: _playerCount < 6 ? Colors.amber : Colors.grey),
+                onPressed: _playerCount < 6 ? () => setState(() => _playerCount++) : null,
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
               ),
             ],
           ),
