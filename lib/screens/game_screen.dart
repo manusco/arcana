@@ -985,6 +985,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
             ),
             style: const TextStyle(color: Colors.white),
+            autofocus: true,
             textCapitalization: TextCapitalization.words,
             autofillHints: const [AutofillHints.name],
             keyboardType: TextInputType.name,
