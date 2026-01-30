@@ -972,6 +972,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            autofocus: true,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
@@ -998,20 +999,18 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.remove_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount > 2) setState(() => _playerCount--);
-                },
+                icon: Icon(Icons.remove_circle, color: _playerCount > 2 ? Colors.amber : Colors.grey),
+                onPressed: _playerCount > 2 ? () => setState(() => _playerCount--) : null,
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text("$_playerCount", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
               ),
               IconButton(
-                icon: const Icon(Icons.add_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount < 6) setState(() => _playerCount++);
-                },
+                icon: Icon(Icons.add_circle, color: _playerCount < 6 ? Colors.amber : Colors.grey),
+                onPressed: _playerCount < 6 ? () => setState(() => _playerCount++) : null,
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
               ),
             ],
           ),
