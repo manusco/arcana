@@ -66,6 +66,9 @@ class Translations {
       'player_bids': '{player} bids {bid}',
       'player_won_trick': '{player} won the trick!',
       'player_chose_trump': '{player} chose {trump} as Trump',
+      'decrease_players': 'Decrease player count',
+      'increase_players': 'Increase player count',
+      'close_rules': 'Close Rules',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -133,6 +136,9 @@ class Translations {
       'player_bids': '{player} bietet {bid}',
       'player_won_trick': '{player} hat den Stich gewonnen!',
       'player_chose_trump': '{player} hat {trump} als Trumpf gewählt',
+      'decrease_players': 'Spieleranzahl verringern',
+      'increase_players': 'Spieleranzahl erhöhen',
+      'close_rules': 'Regeln schließen',
     },
   };
 }
