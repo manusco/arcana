@@ -109,6 +109,7 @@ class _GameScreenState extends State<GameScreen> {
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.amber),
                       onPressed: () => Navigator.pop(context),
+                      tooltip: context.watch<LocalizationService>().translate('close_rules'),
                     ),
                   ],
                 ),
@@ -972,6 +973,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            autofocus: true,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
@@ -998,20 +1000,22 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.remove_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount > 2) setState(() => _playerCount--);
-                },
+                icon: const Icon(Icons.remove_circle),
+                color: Colors.amber,
+                disabledColor: Colors.amber.withValues(alpha: 0.3),
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
+                onPressed: _playerCount > 2 ? () => setState(() => _playerCount--) : null,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text("$_playerCount", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
               ),
               IconButton(
-                icon: const Icon(Icons.add_circle, color: Colors.amber),
-                onPressed: () {
-                  if (_playerCount < 6) setState(() => _playerCount++);
-                },
+                icon: const Icon(Icons.add_circle),
+                color: Colors.amber,
+                disabledColor: Colors.amber.withValues(alpha: 0.3),
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
+                onPressed: _playerCount < 6 ? () => setState(() => _playerCount++) : null,
               ),
             ],
           ),
