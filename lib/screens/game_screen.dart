@@ -972,6 +972,10 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
           // ),
           const SizedBox(height: 10),
           TextField(
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.name],
+            keyboardType: TextInputType.name,
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: context.watch<LocalizationService>().translate('enter_name'),
               labelStyle: const TextStyle(color: Colors.white70),
