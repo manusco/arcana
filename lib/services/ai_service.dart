@@ -69,8 +69,9 @@ class AiService {
       } else {
         // 4. Non-Trumps (Off-suit)
         double baseProb = 0.0;
-        if (card.value == 13) baseProb = 0.8;
-        else if (card.value == 12) baseProb = 0.6;
+        if (card.value == 13) {
+          baseProb = 0.8;
+        } else if (card.value == 12) baseProb = 0.6;
         else if (card.value == 11) baseProb = 0.4;
         else if (card.value >= 8) baseProb = 0.2;
         

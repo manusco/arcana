@@ -24,7 +24,7 @@ abstract class Player {
 }
 
 class HumanPlayer extends Player {
-  HumanPlayer({required String id, required String name}) : super(id: id, name: name);
+  HumanPlayer({required super.id, required super.name});
 
   @override
   Future<int> makePrediction(GameState gameState) {
@@ -42,11 +42,11 @@ class BotPlayer extends Player {
   final int skillLevel;    // 1 (basic) to 3 (expert)
 
   BotPlayer({
-    required String id, 
-    required String name,
+    required super.id, 
+    required super.name,
     this.riskFactor = 0.0,
     this.skillLevel = 2,
-  }) : super(id: id, name: name);
+  });
 
   @override
   Future<int> makePrediction(GameState gameState) async {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -573,7 +572,7 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                         ),
                       ).animate().fadeIn().scale();
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),

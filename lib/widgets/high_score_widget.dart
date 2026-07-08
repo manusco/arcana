@@ -158,7 +158,7 @@ class HighScoreWidget extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
         ],
       ),
     );
