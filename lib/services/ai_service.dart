@@ -31,19 +31,22 @@ class AiService {
     }
 
     // Adjust for risk tolerance
+    int bid;
     if (player is BotPlayer) {
       // Risk factor shifts the "rounding point".
-      // Standard round: 2.5 -> 3.0.
-      // Cautious (-0.5): 2.5 -> 2.0 (needs 3.0 to bid 3).
-      // Risky (+0.5): 2.0 -> 3.0 (needs only 2.0 to bid 3... wait, no).
-      
-      // Better logic: Add risk factor to expected tricks before rounding?
       // Expected: 2.4. Risk +0.2 -> 2.6 -> Bids 3.
       // Expected: 2.6. Risk -0.2 -> 2.4 -> Bids 2.
-      return (expectedTricks + player.riskFactor).round();
+      bid = (expectedTricks + player.riskFactor).round();
+    } else {
+      bid = expectedTricks.round();
     }
-    
-    return expectedTricks.round();
+
+    // Clamp to the tricks actually available this round so a bot can never
+    // announce more tricks than exist (or a negative bid). Applied after the
+    // risk rounding above.
+    if (bid < 0) bid = 0;
+    if (bid > cardsInHand) bid = cardsInHand;
+    return bid;
   }
 
   double _calculateWinProbability(Card card, List<Card> hand, GameState gameState) {

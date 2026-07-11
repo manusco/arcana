@@ -8,7 +8,7 @@ class Translations {
       'goal_title': 'The Goal',
       'goal_text': 'Your objective is not just to win tricks, but to predict exactly how many tricks you will win each round. Accuracy is everything.',
       'cards_title': 'The Cards',
-      'suits_title': 'The Suits (1–13)',
+      'suits_title': 'The Suits (1-13)',
       'suits_text': 'Blood (Red), Spirit (Blue), Nature (Green), Light (Yellow)',
       'arcanum_title': 'The Arcanum (A)',
       'arcanum_text': 'The ultimate power. It always wins the trick (unless another Arcanum was played first).',
@@ -66,6 +66,20 @@ class Translations {
       'player_bids': '{player} bids {bid}',
       'player_won_trick': '{player} won the trick!',
       'player_chose_trump': '{player} chose {trump} as Trump',
+      // UI labels (localized formerly-hardcoded strings)
+      'trump_label': 'Trump',
+      'close': 'Close',
+      'card_arcanum_label': 'ARCANUM',
+      'card_shadow_label': 'SHADOW',
+      // Round result panel
+      'round_results': 'Round Results',
+      'round_summary': 'Predicted {predicted}, won {won}: {delta}',
+      // Game over screen
+      'game_over_title': 'Game Over',
+      'final_standings': 'Final Standings',
+      'winner_announcement': '{player} wins the game!',
+      'your_placement': 'You placed #{place} of {total}',
+      'play_again': 'Play Again',
     },
     'de': {
       'start_new_game': 'Neues Spiel',
@@ -75,7 +89,7 @@ class Translations {
       'goal_title': 'Das Ziel',
       'goal_text': 'Dein Ziel ist es nicht nur, Stiche zu gewinnen, sondern genau vorherzusagen, wie viele Stiche du in jeder Runde gewinnen wirst. Genauigkeit ist alles.',
       'cards_title': 'Die Karten',
-      'suits_title': 'Die Farben (1–13)',
+      'suits_title': 'Die Farben (1-13)',
       'suits_text': 'Blut (Rot), Geist (Blau), Natur (Grün), Licht (Gelb)',
       'arcanum_title': 'Das Arcanum (A)',
       'arcanum_text': 'Die ultimative Macht. Es gewinnt immer den Stich (es sei denn, ein anderes Arcanum wurde zuerst gespielt).',
@@ -133,6 +147,20 @@ class Translations {
       'player_bids': '{player} bietet {bid}',
       'player_won_trick': '{player} hat den Stich gewonnen!',
       'player_chose_trump': '{player} hat {trump} als Trumpf gewählt',
+      // UI labels (localized formerly-hardcoded strings)
+      'trump_label': 'Trumpf',
+      'close': 'Schließen',
+      'card_arcanum_label': 'ARCANUM',
+      'card_shadow_label': 'SCHATTEN',
+      // Round result panel
+      'round_results': 'Rundenergebnis',
+      'round_summary': 'Vorhersage {predicted}, gewonnen {won}: {delta}',
+      // Game over screen
+      'game_over_title': 'Spiel vorbei',
+      'final_standings': 'Endstand',
+      'winner_announcement': '{player} gewinnt das Spiel!',
+      'your_placement': 'Du bist Platz {place} von {total}',
+      'play_again': 'Nochmal spielen',
     },
   };
 }

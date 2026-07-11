@@ -1,11 +1,11 @@
 {
-    "name": "magic_cards",
-    "short_name": "magic_cards",
+    "name": "Arcana",
+    "short_name": "Arcana",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#0d001a",
+    "theme_color": "#1a0033",
+    "description": "Arcana - a strategic, mystical trick-taking card game of prophecy.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

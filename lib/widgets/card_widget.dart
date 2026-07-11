@@ -182,7 +182,7 @@ class CardWidget extends StatelessWidget {
                           SizedBox(height: 2 * scale),
                           if (scale >= 0.7) // Only show text if card is large enough
                             Text(
-                              "ARCANUM",
+                              loc.translate('card_arcanum_label'),
                               style: GoogleFonts.cinzel(
                                 fontSize: centerTextSize,
                                 fontWeight: FontWeight.bold,
@@ -200,7 +200,7 @@ class CardWidget extends StatelessWidget {
                               SizedBox(height: 2 * scale),
                               if (scale >= 0.7) // Only show text if card is large enough
                                 Text(
-                                  "SHADOW",
+                                  loc.translate('card_shadow_label'),
                                   style: GoogleFonts.cinzel(
                                     fontSize: centerTextSize,
                                     fontWeight: FontWeight.bold,

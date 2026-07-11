@@ -219,6 +219,16 @@ class GameViewModel extends ChangeNotifier {
     }
   }
 
+  // Whether the human may legally play [card] right now. Used by the UI to dim
+  // or disable illegal cards instead of only rejecting an illegal tap. Reuses
+  // the existing follow-suit / legal-move rules (does not change them).
+  bool canHumanPlay(Card card) {
+    if (_phase != GamePhase.PLAYING) return false;
+    final current = _gameService.gameState.currentPlayer;
+    if (current is! HumanPlayer) return false;
+    return _gameService.isValidMove(current, card);
+  }
+
   void playCard(Card card) {
     if (_phase != GamePhase.PLAYING) return;
     Player current = _gameService.gameState.currentPlayer;

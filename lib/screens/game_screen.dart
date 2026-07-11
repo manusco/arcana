@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../viewmodels/game_viewmodel.dart';
 import '../models/enums.dart';
 import '../widgets/player_widget.dart';
@@ -30,9 +31,21 @@ class _GameScreenState extends State<GameScreen> {
       final vm = context.read<GameViewModel>();
       final loc = context.read<LocalizationService>();
       vm.setLocalizationService(loc);
-      
+
       _showGameSetupDialog();
+      _maybeShowRulesOnFirstRun();
     });
+  }
+
+  // Auto-open the rules dialog the first time the game is ever launched, so a
+  // new player sees how to play. A persisted flag makes this happen only once.
+  Future<void> _maybeShowRulesOnFirstRun() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool seen = prefs.getBool('arcana_seen_rules') ?? false;
+    if (seen) return;
+    await prefs.setBool('arcana_seen_rules', true);
+    if (!mounted) return;
+    _showRulesDialog();
   }
 
   void _showGameSetupDialog() {
@@ -410,12 +423,12 @@ class _GameScreenState extends State<GameScreen> {
             ),
             child: Stack(
               children: [
-                // Felt texture overlay
+                // Felt texture overlay (bundled locally, no runtime network request)
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0.15,
-                    child: Image.network(
-                      "https://www.transparenttextures.com/patterns/asfalt-dark.png",
+                    child: Image.asset(
+                      "assets/images/felt_texture.png",
                       repeat: ImageRepeat.repeat,
                       errorBuilder: (c, e, s) => const SizedBox(),
                     ),
@@ -520,13 +533,19 @@ class _GameScreenState extends State<GameScreen> {
                       itemCount: state.players[0].hand.length,
                       itemBuilder: (context, index) {
                         final card = state.players[0].hand[index];
-                        return CardWidget(
-                          card: card,
-                          onTap: () {
-                             if (vm.phase == GamePhase.PLAYING && state.currentPlayerIndex == 0) {
-                               vm.playCard(card);
-                             }
-                          },
+                        // During the human's play turn, dim and disable cards
+                        // that are not legal to play (follow-suit rule) instead
+                        // of only rejecting an illegal tap.
+                        final bool isMyPlayTurn =
+                            vm.phase == GamePhase.PLAYING && state.currentPlayerIndex == 0;
+                        final bool legal = vm.canHumanPlay(card);
+                        final bool dim = isMyPlayTurn && !legal;
+                        return Opacity(
+                          opacity: dim ? 0.35 : 1.0,
+                          child: CardWidget(
+                            card: card,
+                            onTap: (isMyPlayTurn && legal) ? () => vm.playCard(card) : null,
+                          ),
                         );
                       },
                     ),
@@ -615,7 +634,7 @@ class _GameScreenState extends State<GameScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text("TRUMP", style: GoogleFonts.cinzel(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text(loc.translate('trump_label').toUpperCase(), style: GoogleFonts.cinzel(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         CardWidget(
                           card: state.trumpCard!,
@@ -805,6 +824,21 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               ),
             ),
+
+            // --- Round Result Panel (per-round feedback) ---
+            if (vm.phase == GamePhase.ROUND_OVER)
+              Positioned.fill(
+                child: _RoundResultPanel(players: state.players),
+              ),
+
+            // --- Game Over Overlay ---
+            if (vm.phase == GamePhase.GAME_OVER)
+              Positioned.fill(
+                child: _GameOverOverlay(
+                  players: state.players,
+                  onPlayAgain: _showGameSetupDialog,
+                ),
+              ),
               ],
             ),
           ),
@@ -852,7 +886,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Close")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.read<LocalizationService>().translate('close'))),
         ],
       ),
     );
@@ -965,11 +999,28 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             ],
           ),
           const SizedBox(height: 10),
-          // TextButton.icon(
-          //   icon: const Icon(Icons.emoji_events, color: Colors.amber),
-          //   label: Text(context.watch<LocalizationService>().translate('high_scores'), style: const TextStyle(color: Colors.amber)),
-          //   onPressed: widget.onShowHighScores,
-          // ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton.icon(
+                icon: const Icon(Icons.menu_book, color: Colors.amber, size: 20),
+                label: Text(
+                  context.watch<LocalizationService>().translate('how_to_play_title'),
+                  style: const TextStyle(color: Colors.amber),
+                ),
+                onPressed: widget.onShowRules,
+              ),
+              const SizedBox(width: 8),
+              TextButton.icon(
+                icon: const Icon(Icons.emoji_events, color: Colors.amber, size: 20),
+                label: Text(
+                  context.watch<LocalizationService>().translate('high_scores'),
+                  style: const TextStyle(color: Colors.amber),
+                ),
+                onPressed: widget.onShowHighScores,
+              ),
+            ],
+          ),
           const SizedBox(height: 10),
           TextField(
             decoration: InputDecoration(
@@ -1060,6 +1111,405 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             border: isSelected ? Border.all(color: Colors.amber) : null,
           ),
           child: Text(flag, style: const TextStyle(fontSize: 24)),
+        ),
+      ),
+    );
+  }
+}
+
+/// Per-round feedback panel shown during [GamePhase.ROUND_OVER]. For every
+/// player it shows the predicted vs won tricks and the points delta for the
+/// round that just finished. The delta is derived from the cumulative
+/// scoreHistory (last entry minus the previous one), so it always matches the
+/// engine's own scoring without duplicating the formula.
+class _RoundResultPanel extends StatelessWidget {
+  final List<dynamic> players;
+
+  const _RoundResultPanel({required this.players});
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.watch<LocalizationService>();
+
+    return Container(
+      color: Colors.black.withValues(alpha: 0.6),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 420),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF1a0033), Color(0xFF0d001a)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.3), width: 2),
+              boxShadow: [
+                BoxShadow(color: Colors.amber.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  loc.translate('round_results'),
+                  style: GoogleFonts.cinzel(
+                    color: Colors.amber,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ...players.map((p) {
+                  final int predicted = p.predictedTricks as int;
+                  final int won = p.wonTricks as int;
+                  final List history = p.scoreHistory as List;
+                  final int delta = history.isEmpty
+                      ? 0
+                      : (history.last as int) -
+                          (history.length >= 2 ? history[history.length - 2] as int : 0);
+                  final String deltaStr = delta >= 0 ? '+$delta' : '$delta';
+                  final String summary = loc
+                      .translate('round_summary')
+                      .replaceAll('{predicted}', '$predicted')
+                      .replaceAll('{won}', '$won')
+                      .replaceAll('{delta}', deltaStr);
+                  final Color deltaColor = delta > 0
+                      ? const Color(0xFF4CAF50)
+                      : (delta < 0 ? Colors.redAccent : Colors.white70);
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                p.name as String,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                summary,
+                                style: GoogleFonts.roboto(color: Colors.white70, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          deltaStr,
+                          style: GoogleFonts.robotoMono(
+                            color: deltaColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// End-of-game overlay shown during [GamePhase.GAME_OVER]. Shows the final
+/// standings (ranked by score), the human player's placement, the persisted
+/// high-score board, and a prominent "Play Again" that resets to a new game.
+class _GameOverOverlay extends StatefulWidget {
+  final List<dynamic> players;
+  final VoidCallback onPlayAgain;
+
+  const _GameOverOverlay({required this.players, required this.onPlayAgain});
+
+  @override
+  State<_GameOverOverlay> createState() => _GameOverOverlayState();
+}
+
+class _GameOverOverlayState extends State<_GameOverOverlay> {
+  List<HighScoreEntry>? _scores;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadScores();
+  }
+
+  Future<void> _loadScores() async {
+    final scores = await HighScoreService().getHighScores();
+    if (!mounted) return;
+    setState(() => _scores = scores);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final loc = context.watch<LocalizationService>();
+
+    // Rank players by score, highest first.
+    final ranked = List<dynamic>.from(widget.players);
+    ranked.sort((a, b) => (b.score as int).compareTo(a.score as int));
+
+    // The human is player id "p1".
+    final int humanRank = ranked.indexWhere((p) => p.id == 'p1') + 1;
+    final dynamic winner = ranked.isNotEmpty ? ranked.first : null;
+
+    return Container(
+      color: Colors.black.withValues(alpha: 0.85),
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 460),
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF1a0033), Color(0xFF0d001a)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.4), width: 2),
+              boxShadow: [
+                BoxShadow(color: Colors.amber.withValues(alpha: 0.25), blurRadius: 24, spreadRadius: 2),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 48),
+                const SizedBox(height: 12),
+                Text(
+                  loc.translate('game_over_title'),
+                  style: GoogleFonts.cinzel(
+                    color: Colors.amber,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                if (winner != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    loc.translate('winner_announcement').replaceAll('{player}', winner.name as String),
+                    style: GoogleFonts.playfairDisplay(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                if (humanRank > 0) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    loc
+                        .translate('your_placement')
+                        .replaceAll('{place}', '$humanRank')
+                        .replaceAll('{total}', '${ranked.length}'),
+                    style: GoogleFonts.roboto(
+                      color: const Color(0xFFFFD700),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                const SizedBox(height: 20),
+                // Final standings
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    loc.translate('final_standings'),
+                    style: GoogleFonts.cinzel(
+                      color: Colors.amber,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...ranked.asMap().entries.map((entry) {
+                  final int rank = entry.key + 1;
+                  final dynamic p = entry.value;
+                  final bool isHuman = p.id == 'p1';
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isHuman
+                          ? Colors.amber.withValues(alpha: 0.15)
+                          : Colors.black.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: rank == 1
+                            ? const Color(0xFFFFD700).withValues(alpha: 0.5)
+                            : Colors.white.withValues(alpha: 0.1),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          child: Text(
+                            '$rank',
+                            style: GoogleFonts.robotoMono(
+                              color: rank == 1 ? const Color(0xFFFFD700) : Colors.white70,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            p.name as String,
+                            style: GoogleFonts.roboto(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: isHuman ? FontWeight.bold : FontWeight.normal,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          '${p.score}',
+                          style: GoogleFonts.robotoMono(
+                            color: const Color(0xFFFFD700),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+                const SizedBox(height: 20),
+                // High-score board (inline)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 18),
+                      const SizedBox(width: 6),
+                      Text(
+                        loc.translate('high_scores'),
+                        style: GoogleFonts.cinzel(
+                          color: const Color(0xFFFFD700),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                if (_scores == null)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: CircularProgressIndicator(color: Colors.amber),
+                  )
+                else if (_scores!.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      loc.translate('no_high_scores_yet'),
+                      style: GoogleFonts.roboto(color: Colors.white70, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else
+                  ..._scores!.take(5).toList().asMap().entries.map((e) {
+                    final int rank = e.key + 1;
+                    final HighScoreEntry sc = e.value;
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: rank == 1
+                              ? const Color(0xFFFFD700).withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            child: Text(
+                              '$rank',
+                              style: GoogleFonts.robotoMono(
+                                color: rank == 1 ? const Color(0xFFFFD700) : Colors.white70,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              sc.username,
+                              style: GoogleFonts.roboto(color: Colors.white, fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            '${sc.score}',
+                            style: GoogleFonts.robotoMono(
+                              color: const Color(0xFFFFD700),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                const SizedBox(height: 20),
+                // Play Again
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(
+                      loc.translate('play_again'),
+                      style: GoogleFonts.cinzel(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    onPressed: widget.onPlayAgain,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

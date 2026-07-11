@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:magic_cards/models/card.dart' as game;
-import 'package:magic_cards/models/enums.dart';
-import 'package:magic_cards/widgets/card_widget.dart';
-import 'package:magic_cards/services/localization_service.dart';
+import 'package:arcana/models/card.dart' as game;
+import 'package:arcana/models/enums.dart';
+import 'package:arcana/widgets/card_widget.dart';
+import 'package:arcana/services/localization_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

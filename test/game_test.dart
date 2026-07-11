@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:magic_cards/models/card.dart';
-import 'package:magic_cards/models/enums.dart';
-import 'package:magic_cards/models/player.dart';
-import 'package:magic_cards/models/game_state.dart';
-import 'package:magic_cards/services/game_service.dart';
+import 'package:arcana/models/card.dart';
+import 'package:arcana/models/enums.dart';
+import 'package:arcana/models/player.dart';
+import 'package:arcana/models/game_state.dart';
+import 'package:arcana/services/game_service.dart';
 
 void main() {
   group('Card Logic', () {
