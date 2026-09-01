@@ -1040,6 +1040,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             autofillHints: const [AutofillHints.name],
             keyboardType: TextInputType.name,
             textInputAction: TextInputAction.done,
+            autofocus: true,
             onChanged: (value) => setState(() => _username = value.trim()),
           ),
           const SizedBox(height: 24),
@@ -1053,6 +1054,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
+                tooltip: context.watch<LocalizationService>().translate('decrease_player_count'),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1063,6 +1065,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
+                tooltip: context.watch<LocalizationService>().translate('increase_player_count'),
               ),
             ],
           ),
