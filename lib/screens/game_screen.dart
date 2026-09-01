@@ -1051,6 +1051,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
             children: [
               IconButton(
                 icon: const Icon(Icons.remove_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('decrease_players'),
                 onPressed: () {
                   if (_playerCount > 2) setState(() => _playerCount--);
                 },
@@ -1062,6 +1063,7 @@ class _GameSetupDialogState extends State<_GameSetupDialog> {
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Colors.amber),
+                tooltip: context.watch<LocalizationService>().translate('increase_players'),
                 onPressed: () {
                   if (_playerCount < 6) setState(() => _playerCount++);
                 },
